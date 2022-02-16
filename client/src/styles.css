@@ -1,0 +1,14 @@
+ * {
+     color: var(--main-color);
+ }
+ :root {
+     --main-color: gold;
+     --secondary-color: #222;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    background-color: var(--secondary-color) !important;
+}
+

@@ -1,0 +1,19 @@
+[
+    {   "id": 1,
+        "name": "bigaxe",
+        "type": "axe",
+        "price": 200
+    },
+    {
+        "id": 2,
+        "name": "smallknife",
+        "type": "knife",
+        "price": 170
+    },
+    {
+        "id": 3,
+        "name": "lightweight",
+        "type": "backpack",
+        "price": 300
+    }
+]

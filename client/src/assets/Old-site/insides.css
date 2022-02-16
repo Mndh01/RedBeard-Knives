@@ -1,0 +1,226 @@
+.container {
+    padding: 0 10%;
+}
+
+
+.slide-container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: var(--secondary-color);
+    color: var(--main-color);
+    height: 70vh;
+    position: relative;
+}
+.previous{
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    cursor: pointer;
+    font-size: 50px;
+}
+.next {
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    cursor: pointer;
+    font-size: 50px;
+}
+.my-slides {
+    display: none;
+    height: 100%;
+    position: relative;
+}
+/* Fading animation */
+.fade {
+    -webkit-animation-name: fade;
+    -webkit-animation-duration: 1.5s;
+    animation-name: fade;
+    animation-duration: 1.5s;
+  }
+  
+  @-webkit-keyframes fade {
+    from {opacity: .4}
+    to {opacity: 1}
+  }
+  
+  @keyframes fade {
+    from {opacity: .4}
+    to {opacity: 1}
+  }
+.my-slides .numbertext {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 10;
+}
+.my-slides img {
+    position: absolute;
+    height: calc(100% - (20px));
+    width: 100%;
+}
+.my-slides .text {
+    text-align: center;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%);
+}
+.slide-dots {
+    display: flex;
+    justify-content: center;
+    background-color: var(--secondary-color);
+}
+.dot {
+    margin: 0 5px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--main-color);
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    transition: background-color 1s;
+    cursor: pointer;
+}
+
+
+
+
+.main-container {
+    display: block;
+    background-color: var(--secondary-color);
+    width: 100%;
+}
+.blocks-container {
+    display: flex;
+    width: 100%;
+    height: fit-content;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: var(--secondary-color);
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+}
+
+
+
+
+.knife,
+.hatchet,
+.axe,
+.survival-pack{
+    display: flex;
+    position: relative;
+    min-width: 300px;
+    max-width: 350px;
+    flex-grow: 1;
+    justify-content: center;
+    height: 350px;
+    width:calc(80%/ 4);
+    border: var(--main-color) solid 2px;
+    background-color: #f2f2f2;
+    margin:10px calc(10% / 5);
+    transition:transform 0.5s;
+}
+.knife .image,
+.hatchet .image,
+.axe .image,
+.survival-pack .image{
+    height: 100%;
+    transition:transform 0.5s;
+}
+.knife:hover,
+.hatchet:hover,
+.axe:hover,
+.survival-pack:hover{ 
+    transform: scale(0.9);
+    cursor:pointer;
+}
+.knife .info,
+.hatchet .info,
+.axe .info,
+.survival-pack .info {
+    display:block;
+    position: absolute;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 75%;
+    height: 0%;
+    opacity: 0;
+    transform: translate(0, -0%) rotatey(90deg);
+    transform-origin: left;
+    transition: transform 0.5s, opacity 0.2s, height 2s;
+}
+.knife:hover .info,
+.hatchet:hover .info,
+.axe:hover .info,
+.survival-pack:hover .info {
+    opacity: 1;
+    height:100%;
+    transform: rotatex(0);
+    transition: transform 0.5s, height 2s;
+}
+.knife .info h3,
+.hatchet .info h3,
+.axe .info h3,
+.survival-pack .info h3 {
+    color: var(--main-color);
+    line-height: 1.6;
+    margin: 25px 0 0 0;
+}
+.knife .info p,
+.hatchet .info p,
+.axe .info p,
+.survival-pack .info p {
+    color: var(--main-color);
+    line-height: 1.6;
+    margin: 25px 0 0 0;
+}
+.knife::before,
+.hatchet::before,
+.axe::before,
+.survival-pack::before {
+    content: "";
+    display: block;
+    width: 105%;
+    height: 105%;
+    background-color: black;
+    opacity: 0.6;
+    position: absolute;
+    left: -2.5%;
+    border-radius: 3px;
+    transition: all 0.5s;
+    transform: rotateX(90deg);
+}
+.knife:hover::before, 
+.hatchet:hover::before,
+.axe:hover::before, 
+.survival-pack:hover::before {
+    transform: rotateX(0deg) translate(0, -2.5%);
+    opacity: 0.8;
+}
+/* .knife::after,
+.hatchet::after,
+.axe::after,
+.survival-pack::after {
+    content: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam tempore, facere vero doloribus et sapiente earum similique";
+    width: 70%;
+    height: 100%;
+    right: 9%;
+    color: var(--main-color);
+    position: absolute;
+    opacity: 0;
+    transition: all 1s;
+    line-height: 1.6;
+    z-index: 3;
+}
+.knife:hover::after,
+.hatchet:hover::after,
+.axe:hover::after,
+.survival-pack:hover::after{ 
+    opacity: 1;
+    transform: translate(0, 30%);
+} */
+div img {
+    width: 100%;
+    height: inherit;
+}
