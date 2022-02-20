@@ -22,14 +22,28 @@ namespace API.Data
             return await _context.Products.FirstOrDefaultAsync(product => product.Id == id);
         }
 
+        // public async Task<IEnumerable<Product>> GetProductsAsync(string type, double price) 
+        // {
+        //     return await _context.Products
+        //         .Where(p => p.Price <= price? )
+        // }
         public async Task<IEnumerable<Product>> GetProductsByPriceAsync(double price)
         {
-            return await _context.Products.Where(p => p.Price <= price).ToListAsync();
+            return await _context.Products
+            .Where(p => p.Price <= price)
+            .ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> GetProductsByTypeAsync(string type)
         {
-            return await _context.Products.Where(p => p.Type == type).ToListAsync();
+            return await _context.Products
+            .Where(p => p.Type == type)
+            .ToListAsync();
+        }
+
+        public async Task<bool> SaveAllAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

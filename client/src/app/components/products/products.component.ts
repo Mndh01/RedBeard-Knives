@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IProduct } from 'src/app/models/Product';
+import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({
@@ -12,7 +12,13 @@ export class ProductsComponent implements OnInit {
   constructor(private productService: ProductsService) { }
 
   ngOnInit() {
-    this.productService.getProductsByPrice(300).subscribe((data) => this.products = data);
+    this.productService.getProductsByPrice(300).subscribe(data => {
+      localStorage.setItem("product",JSON.stringify(data));
+      this.products = data;
+    }, error => {
+      console.log(error);
+    }
+    );
   }
 
 }

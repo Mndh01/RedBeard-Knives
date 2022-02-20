@@ -1,3 +1,13 @@
-<p *ngFor="let product of products">{{ product.id }} {{ product.type }} {{ product.price }}</p>
+<h3>Sort by:</h3>
+<div>
+    <label for="Price" class="fs-5">
+        <input type="checkbox" name="price" value="Price">
+     Price</label>
+</div>
+<div>
+    <label for="Type" class="fs-5">
+        <input type="checkbox" name="Type" value="Type">
+     Type</label>
+</div>
 
-<!-- <p>{{ products }}</p> -->
+<!-- <p *ngFor="let product of products">{{ product.id }} {{ product.type }} {{ product.price }} </p> -->

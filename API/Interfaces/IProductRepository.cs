@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Interfaces
 {
     public interface IProductRepository
-    {
+    {                
+        Task<bool> SaveAllAsync();
         Task<Product> GetProductByIdAsync(int id);
         Task<IEnumerable<Product>> GetProductsByPriceAsync(double price);
         Task<IEnumerable<Product>> GetProductsByTypeAsync(string type);

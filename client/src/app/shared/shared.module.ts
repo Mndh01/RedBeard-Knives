@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 
 
@@ -11,10 +12,12 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     CommonModule,
     CarouselModule.forRoot(),
     BsDropdownModule.forRoot(),
+    NgxSpinnerModule,
   ],
   exports: [
     CarouselModule,
     BsDropdownModule,
+    NgxSpinnerModule,
   ]
 })
 export class SharedModule { }
