@@ -23,7 +23,7 @@ namespace API.Controllers
             _productRepository = productRepository;
         }
         
-        [HttpGet("byId/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProductById(int id) 
         {   
             var product = await _productRepository.GetProductByIdAsync(id);  
@@ -34,29 +34,38 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        // public async Task<IEnumerable<Product>> GetProducts() 
-        // {
-        //     var products = await _productRepository;
-        // }
-        [HttpGet("byPrice/{price}")]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByPrice(double price) 
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string type, double price, int inStock, int soldItems) 
         {
-            var products  = await _productRepository.GetProductsByPriceAsync(price);  
+            var products = await _productRepository.GetProductsAsync(type, price, inStock, soldItems);
 
-            var ProductsToReturn = _mapper.Map<IEnumerable<ProductDto>>(products);
-
-            return Ok(ProductsToReturn.ToList());
-           
+            if (products != null) 
+                return Ok(products);
+            
+            return BadRequest("Couldn't fetch the data!");
         }
-        
-        [HttpGet("byType/{type}")]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByType(string type) 
+
+
+        [HttpPost("add-product")]
+        public async Task<ActionResult<Product>> AddProduct(Product product) 
         {
-            var products = await _productRepository.GetProductsByTypeAsync(type); 
+            var newProduct  = _mapper.Map<Product>(product);
+            newProduct.Type.ToLower();
             
-            var ProductsToReturn = _mapper.Map<IEnumerable<ProductDto>>(products);
+            if(await _productRepository.AddProductAsync(newProduct))
+                return Ok(newProduct);
+
+            return BadRequest("Failed to add product");               
+        }
+
+        [HttpDelete]
+        public ActionResult DeleteProduct(int id)
+        {
+            var result = _productRepository.DeleteProduct(id);
+
+            if (result)
+                return Ok("Deleted successfully");
             
-            return Ok(ProductsToReturn); 
+            return BadRequest("Failed to remove product");
         }
         
         [HttpPost("add-photo")]
@@ -84,3 +93,23 @@ namespace API.Controllers
         }
     }
 }
+        // [HttpGet("byPrice/{price}")]
+        // public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByPrice(double price) 
+        // {
+        //     var products  = await _productRepository.GetProductsByPriceAsync(price);  
+
+        //     var ProductsToReturn = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+        //     return Ok(ProductsToReturn.ToList());
+           
+        // }
+        
+        // [HttpGet("byType/{type}")]
+        // public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByType(string type) 
+        // {
+        //     var products = await _productRepository.GetProductsByTypeAsync(type); 
+            
+        //     var ProductsToReturn = _mapper.Map<IEnumerable<ProductDto>>(products);
+            
+        //     return Ok(ProductsToReturn); 
+        // }

@@ -22,28 +22,63 @@ namespace API.Data
             return await _context.Products.FirstOrDefaultAsync(product => product.Id == id);
         }
 
-        // public async Task<IEnumerable<Product>> GetProductsAsync(string type, double price) 
+        public async Task<IEnumerable<Product>> GetProductsAsync(string type, double price, int inStock, int soldItems) 
+        {
+
+            IEnumerable<Product> result = await _context.Products.ToListAsync();
+
+            if (!string.IsNullOrEmpty(type))
+                result = result.Where(p => p.Type == type).ToList();
+
+            if (price != 0)
+                result = result.Where(p => p.Price == price).ToList();
+
+            if (inStock != 0)
+                result = result.Where(p => p.InStock == inStock).ToList();
+
+            if (soldItems != 0)
+                result = result.Where(p => p.SoldItems == soldItems).ToList();
+
+            return result;
+                
+        }
+        // public async Task<IEnumerable<Product>> GetProductsByPriceAsync(double price)
         // {
         //     return await _context.Products
-        //         .Where(p => p.Price <= price? )
+        //     .Where(p => p.Price <= price)
+        //     .ToListAsync();
         // }
-        public async Task<IEnumerable<Product>> GetProductsByPriceAsync(double price)
-        {
-            return await _context.Products
-            .Where(p => p.Price <= price)
-            .ToListAsync();
-        }
 
-        public async Task<IEnumerable<Product>> GetProductsByTypeAsync(string type)
+        // public async Task<IEnumerable<Product>> GetProductsByTypeAsync(string type)
+        // {
+        //     return await _context.Products
+        //     .Where(p => p.Type == type)
+        //     .ToListAsync();
+        // }
+
+        public async Task<bool> AddProductAsync(Product product)
         {
-            return await _context.Products
-            .Where(p => p.Type == type)
-            .ToListAsync();
+            _context.Products.Add(product);      
+               return await SaveAllAsync();
         }
 
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public bool DeleteProduct(int id)
+        {
+            var product = _context.Products.Find(id);
+            
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                _context.SaveChanges();
+                return true;
+            }   
+            
+            return false;
         }
     }
 }

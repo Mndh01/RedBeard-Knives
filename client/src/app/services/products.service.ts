@@ -12,7 +12,7 @@ export class ProductsService {
   constructor(private http: HttpClient) { }
 
   getProduct(){
-    return this.http.get(this.baseUrl + "products/getproducts");
+    return this.http.get(this.baseUrl + "products", {});
   }
 
   getProductById(id: number){

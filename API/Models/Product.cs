@@ -9,7 +9,7 @@ namespace API.Models
     {   
         public int Id { get; set; }
         public string Type { get; set; }
-        public double Price { get; set; }
+        public int Price { get; set; }
         public int InStock { get; set; }
         public int SoldItems { get; set; }
         public ICollection<Photo> Photos { get; set; }
