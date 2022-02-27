@@ -1,13 +1,37 @@
-<h3>Sort by:</h3>
-<div>
-    <label for="Price" class="fs-5">
-        <input type="checkbox" name="price" value="Price">
-     Price</label>
+<div class="container">
+    <form #form="ngForm" class="sort-options-container">
+        <h3 style="margin: 0 5px 0 0;">Filter by:</h3>
+        <div class="sort-input-holder">
+            <input class="text-input" 
+                type="number" name="price" placeholder="Price"
+                [(ngModel)]="price">
+        </div>
+        <div class="select-container">
+            <div class="select" tabindex="1">
+                <input class="selectopt" name="selector" type="radio" id="opt0" checked>
+                <label for="opt0" class="option" (click)="getType('')">All</label>
+                <ng-container select="selector" *ngFor="let category of categoryList; let i = index">
+                    <input class="selectopt" name="selector" type="radio" id="opt{{i+1}}">
+                    <label for="opt{{i+1}}" class="option" (click)="getType(category)">
+                        {{category}}</label>
+                </ng-container>
+            </div>
+        </div>
+        
+        <!-- <div>
+            <div>
+                <label for="highestSells" style="position: relative; margin-right: 20px;">Highest Sells:
+                    <input class="" style="top: 7px; right: -15px; position: absolute;" type="checkbox" name="highestSells">
+                </label>
+            </div>
+            <div>
+                <label for="mostAvailable" style="position: relative; margin-right: 20px;">Most available:
+                    <input class="form-controll" style="top: 7px; right: -15px; position: absolute;" type="checkbox" name="mostAvailable">
+                </label>
+            </div>
+        </div> -->
+        <button type="submit" class="btn btn-primary" (click)="getProducts()">click me</button>
+    </form>
+    <div class="divider"></div>
+    <app-product-card></app-product-card>
 </div>
-<div>
-    <label for="Type" class="fs-5">
-        <input type="checkbox" name="Type" value="Type">
-     Type</label>
-</div>
-
-<!-- <p *ngFor="let product of products">{{ product.id }} {{ product.type }} {{ product.price }} </p> -->

@@ -8,17 +8,34 @@ import { ProductsService } from 'src/app/services/products.service';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
-  public products: any;
+  products: Product[];
+  categoryList: Array<string> = ['axe', 'web developer', 'Software Engineer','IT', 'web developer', 'Software Engineer','IT'];
+  category:string | undefined = this.categoryList[0]; 
+  price:number;
+  inStock:number;
+  soldItems:number;
+  checkedInput:any;
   constructor(private productService: ProductsService) { }
 
   ngOnInit() {
-    this.productService.getProductsByPrice(300).subscribe(data => {
-      localStorage.setItem("product",JSON.stringify(data));
-      this.products = data;
-    }, error => {
-      console.log(error);
-    }
-    );
   }
 
+  getProducts() {
+    this.productService.getProducts(this.category, this.price, this.inStock, this.soldItems).subscribe(data => {
+      this.products = data;
+      localStorage.setItem("product",JSON.stringify(data));
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  getType(category:string){
+    this.category = category;
+    // this.checkedInput = document.querySelectorAll(".selectopt")?.forEach(element => {
+    //   if (element.hasAttribute("checked")){
+    //     this.checkedInput = element;
+    //     console.log(this.checkedInput)
+    //   }
+    // });
+  }
 }

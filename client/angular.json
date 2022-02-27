@@ -32,7 +32,9 @@
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/bootswatch/dist/slate/bootstrap.css"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -69,6 +71,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "sslKey": "./ssl/server.key",
+            "sslCert": "./ssl/server.crt",
+            "ssl": true,
+            "browserTarget": "test:build"
+          },
           "configurations": {
             "production": {
               "browserTarget": "client:build:production"
@@ -99,7 +107,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              
+            ]
           }
         }
       }

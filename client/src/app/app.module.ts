@@ -13,7 +13,8 @@ import { CarouselComponent } from './components/carousel/carousel.component';
 import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ProductCardComponent } from './components/product-card/product-card.component';
+import { ToTopComponent } from './components/to-top/to-top.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     CarouselComponent,
     AdminPanelComponent,
     NotFoundComponent,
+    ProductCardComponent,
+    ToTopComponent,
   ],
   imports: [
     BrowserModule,

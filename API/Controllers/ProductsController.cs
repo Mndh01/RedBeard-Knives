@@ -34,14 +34,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string type, double price, int inStock, int soldItems) 
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string type, double price=-1, int inStock=-1, int soldItems=-1) 
         {
             var products = await _productRepository.GetProductsAsync(type, price, inStock, soldItems);
 
             if (products != null) 
                 return Ok(products);
             
-            return BadRequest("Couldn't fetch the data!");
+            return BadRequest("Couldn't find such data!");
         }
 
 

@@ -12,3 +12,30 @@ body {
     background-color: var(--secondary-color) !important;
 }
 
+.dropdown-menu {
+    background-image: linear-gradient(180deg, #3b3b3b , rgba(100 100 100 / 1), rgba(59 59 59 / 1));
+}
+.dropdown-item {
+    transition: padding-left .5s;
+}
+.dropdown-item:hover {
+    padding-left: 30px;
+    text-decoration: underline;
+}
+.text-input {
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    color: var(--main-color);
+    background-color: var(--secondary-color);
+    padding-left: 5px;
+    outline: none;
+}
+
+.divider{
+    margin: 10px 0;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}

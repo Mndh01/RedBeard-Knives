@@ -1,0 +1,26 @@
+.arrow-container{
+    display: inline-block;
+    position: sticky;
+    bottom: 40px;
+    left: calc(100% - 30px - 2%);
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: black;
+    text-align: center;
+
+    transition: all .2s ease;
+        .fa {
+            color: var(--main-color);
+            font-size: 25px;
+            transition: color .2s ease;
+        }
+}
+
+.arrow-container:hover {
+    background-color: var(--main-color);
+
+    .fa {
+        color: var(--secondary-color);
+    }
+}

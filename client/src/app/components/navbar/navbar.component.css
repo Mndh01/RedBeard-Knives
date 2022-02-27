@@ -11,16 +11,7 @@
 #navbarNavDropdown {
     justify-content: space-between;
 }
-.nav-item .dropdown-menu {
-    background-image: linear-gradient(180deg, #3b3b3b , rgba(100 100 100 / 1), rgba(59 59 59 / 1));
-}
-.dropdown-item {
-    transition: padding-left .5s;
-}
-.dropdown-item:hover {
-    padding-left: 30px;
-    text-decoration: underline;
-}
+
 .search-bar {
     border-radius: 10px;
     display: flex;
@@ -28,15 +19,6 @@
     color: var(--main-color);
     background-color: var(--secondary-color);
     height: 35px;
-}
-.search-input {
-    border: none;
-    border-radius: inherit;
-    width: 100%;
-    color: var(--main-color);
-    background-color: var(--secondary-color);
-    padding-left: 5px;
-    outline: none;
 }
 .search-submit {
     border: none;

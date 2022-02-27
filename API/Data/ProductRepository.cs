@@ -25,18 +25,20 @@ namespace API.Data
         public async Task<IEnumerable<Product>> GetProductsAsync(string type, double price, int inStock, int soldItems) 
         {
 
-            IEnumerable<Product> result = await _context.Products.ToListAsync();
+            var result = await _context.Products
+            .Include(p => p.Photos)
+            .ToListAsync();
 
             if (!string.IsNullOrEmpty(type))
                 result = result.Where(p => p.Type == type).ToList();
 
-            if (price != 0)
-                result = result.Where(p => p.Price == price).ToList();
+            if (price != -1)
+                result = result.Where(p => p.Price <= price).ToList();
 
-            if (inStock != 0)
+            if (inStock != -1)
                 result = result.Where(p => p.InStock == inStock).ToList();
 
-            if (soldItems != 0)
+            if (soldItems != -1)
                 result = result.Where(p => p.SoldItems == soldItems).ToList();
 
             return result;
@@ -58,7 +60,7 @@ namespace API.Data
 
         public async Task<bool> AddProductAsync(Product product)
         {
-            _context.Products.Add(product);      
+            _context.Products.Add(product);   
                return await SaveAllAsync();
         }
 

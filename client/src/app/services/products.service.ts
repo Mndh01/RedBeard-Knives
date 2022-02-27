@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { Product } from '../models/Product';
 
 @Injectable({
   providedIn: 'root'
@@ -11,20 +12,13 @@ export class ProductsService {
 
   constructor(private http: HttpClient) { }
 
-  getProduct(){
-    return this.http.get(this.baseUrl + "products", {});
+  getProducts(type: String = '', price:number = -1, inStock:number = -1, soldItems:number = -1){
+    return this.http.get<Product[]>(this.baseUrl + "products?type=" + type + "&price=" + price + "&inStock=" + inStock + "&soldItems=" + soldItems);  
   }
 
   getProductById(id: number){
-    return this.http.get(this.baseUrl + "products/byId/" + id);
+    return this.http.get<Product>(this.baseUrl + "products" + id);
   }
 
-  getProductsByPrice(price: number){
-    return this.http.get(this.baseUrl + "products/byPrice/" + price);
-  }
-
-  getProductsByType(type: string){
-    return this.http.get(this.baseUrl + "products/byType/" + type);
-  }
 }
 
