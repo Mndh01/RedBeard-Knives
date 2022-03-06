@@ -1,18 +1,20 @@
 <div class="container">
     <form #form="ngForm" class="sort-options-container">
-        <h3 style="margin: 0 5px 0 0;">Filter by:</h3>
+        <h3 style="margin: 0 5px 0 0;">Filter:</h3>
         <div class="sort-input-holder">
             <input class="text-input" 
-                type="number" name="price" placeholder="Price"
-                [(ngModel)]="price">
+                type="number"
+                name="price"
+                placeholder="Price"
+                [(ngModel)]="inputPrice">
         </div>
         <div class="select-container">
             <div class="select" tabindex="1">
                 <input class="selectopt" name="selector" type="radio" id="opt0" checked>
-                <label for="opt0" class="option" (click)="getType('')">All</label>
+                <label for="opt0" class="option" (click)="getCategory('')">All</label>
                 <ng-container select="selector" *ngFor="let category of categoryList; let i = index">
                     <input class="selectopt" name="selector" type="radio" id="opt{{i+1}}">
-                    <label for="opt{{i+1}}" class="option" (click)="getType(category)">
+                    <label for="opt{{i+1}}" class="option" (click)="getCategory(category)">
                         {{category}}</label>
                 </ng-container>
             </div>
@@ -33,5 +35,5 @@
         <button type="submit" class="btn btn-primary" (click)="getProducts()">click me</button>
     </form>
     <div class="divider"></div>
-    <app-product-card></app-product-card>
+    <app-product-card [products]="products"></app-product-card>
 </div>

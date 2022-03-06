@@ -1,13 +1,13 @@
-<div class=".container-fluid"></div>
+<div class=".container-fluid">
     <div class="row">
-        <div *ngFor="let product of products" class="col-sm-5">
+        <div *ngFor="let product of products" class="col-sm-2" routerLink="/products/{{product.id}}">
             <div class="card mb-2">
-                <img style="height: 200px;" src="../../../assets/Old-site/images/rb_logo_metal_print.png" class="card-img-top" alt="image not availabe">
+                <img src="{{product.photoUrl || '../../../assets/Old-site/images/rb_logo_metal_print.png'}}" class="card-img-top" alt="image not availabe">
                 <div class="card-body p-1">
-                  <h5 class="card-title">{{product.type}}</h5>
-                  <p class="card-text">Some quick example </p>
-                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                  <h5 class="card-title text-center">{{product.category}}</h5>
+                  <p class="card-text text-center">Some quick example</p>
                 </div>
-              </div>
+            </div>
         </div>
     </div>
+</div>

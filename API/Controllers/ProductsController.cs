@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Interfaces;
@@ -10,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
-{   
+{
     public class ProductsController : BaseApiController
     {
         private readonly IProductRepository _productRepository;
@@ -23,25 +21,27 @@ namespace API.Controllers
             _productRepository = productRepository;
         }
         
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> GetProductById(int id) 
+        [HttpGet("{id}", Name = "GetProduct")]
+        public async Task<ActionResult<ItemDto>> GetProductById(int id) 
         {   
-            var product = await _productRepository.GetProductByIdAsync(id);  
+            var product = await _productRepository.GetItemAsync(id);  
 
-            var productToReturn = _mapper.Map<ProductDto>(product);
-
-            return Ok(productToReturn);
+            if (product != null)
+            {
+                return Ok(product);
+            }
+            return BadRequest("Couldn't find product...");
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string type, double price=-1, int inStock=-1, int soldItems=-1) 
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string category, int price=-1, int inStock=-1, int soldItems=-1) 
         {
-            var products = await _productRepository.GetProductsAsync(type, price, inStock, soldItems);
+            var products = await _productRepository.GetItemsAsync(category, price, inStock, soldItems);
 
             if (products != null) 
                 return Ok(products);
             
-            return BadRequest("Couldn't find such data!");
+            return BadRequest("Couldn't find products with such properties...");
         }
 
 
@@ -49,7 +49,7 @@ namespace API.Controllers
         public async Task<ActionResult<Product>> AddProduct(Product product) 
         {
             var newProduct  = _mapper.Map<Product>(product);
-            newProduct.Type.ToLower();
+            newProduct.Category = newProduct.Category.ToLower();
             
             if(await _productRepository.AddProductAsync(newProduct))
                 return Ok(newProduct);
@@ -57,7 +57,7 @@ namespace API.Controllers
             return BadRequest("Failed to add product");               
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult DeleteProduct(int id)
         {
             var result = _productRepository.DeleteProduct(id);
@@ -71,7 +71,7 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
-            var product = await _productRepository.GetProductByIdAsync(2);
+            var product = await _productRepository.GetProductByIdAsync(1);
 
             var result = await _photoService.AddPhotoAsync(file);
 
@@ -83,33 +83,21 @@ namespace API.Controllers
                 PublicId = result.PublicId
             };
 
+            if (product.Photos.Count == 0) 
+            {
+                photo.IsMain = true;
+            }
+
             product.Photos.Add(photo);
 
             if (await _productRepository.SaveAllAsync())
-                return _mapper.Map<PhotoDto>(photo);
+            {
+                return CreatedAtRoute("GetProduct", 1, _mapper.Map<PhotoDto>(photo));
 
-            return BadRequest("Problem setting the photo");
+            }
+
+            return BadRequest("Problem adding the photo...");
 
         }
     }
 }
-        // [HttpGet("byPrice/{price}")]
-        // public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByPrice(double price) 
-        // {
-        //     var products  = await _productRepository.GetProductsByPriceAsync(price);  
-
-        //     var ProductsToReturn = _mapper.Map<IEnumerable<ProductDto>>(products);
-
-        //     return Ok(ProductsToReturn.ToList());
-           
-        // }
-        
-        // [HttpGet("byType/{type}")]
-        // public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByType(string type) 
-        // {
-        //     var products = await _productRepository.GetProductsByTypeAsync(type); 
-            
-        //     var ProductsToReturn = _mapper.Map<IEnumerable<ProductDto>>(products);
-            
-        //     return Ok(ProductsToReturn); 
-        // }

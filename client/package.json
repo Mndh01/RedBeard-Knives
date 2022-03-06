@@ -23,6 +23,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@kolkov/ngx-gallery": "^2.0.1",
     "bootstrap": "^5.1.3",
     "bootswatch": "^5.1.3",
     "font-awesome": "^4.7.0",

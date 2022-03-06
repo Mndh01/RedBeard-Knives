@@ -15,6 +15,9 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { ToTopComponent } from './components/to-top/to-top.component';
+import { TextInputComponent } from './components/text-input/text-input.component';
+import { ProductDetailsComponent } from './components/product-details/product-details.component';
+import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +30,9 @@ import { ToTopComponent } from './components/to-top/to-top.component';
     NotFoundComponent,
     ProductCardComponent,
     ToTopComponent,
+    TextInputComponent,
+    ProductDetailsComponent,
+    PhotoEditorComponent,
   ],
   imports: [
     BrowserModule,

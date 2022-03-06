@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { FormsModule } from '@angular/forms';
+import { TabsModule } from 'ngx-bootstrap/tabs'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 
 
 
@@ -15,12 +17,18 @@ import { FormsModule } from '@angular/forms';
     BsDropdownModule.forRoot(),
     NgxSpinnerModule,
     FormsModule,
+    ReactiveFormsModule,
+    TabsModule.forRoot(),
+    NgxGalleryModule,
   ],
   exports: [
     CarouselModule,
     BsDropdownModule,
     NgxSpinnerModule,
     FormsModule,
+    ReactiveFormsModule,
+    TabsModule,
+    NgxGalleryModule,
   ]
 })
 export class SharedModule { }

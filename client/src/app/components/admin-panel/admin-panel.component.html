@@ -1,3 +1,35 @@
+<div class="container">
+        <form [formGroup]="addProductForm" class="form-inline mt-2 mt-md-0" 
+                (ngSubmit)="addProductForm.valid && addProduct()" autocomplete="off"> 
+                <!-- <input
+                        class="form-control mr-sm-2 mt-2"
+                        type="text" 
+                        formControlName="category" 
+                        placeholder="Product type">
+                <input 
+                        class="form-control mr-sm-2 mt-1"
+                        type="number" 
+                        formControlName="price"
+                        placeholder="Product price">
+                <input 
+                        class="form-control mr-sm-2 mt-1"
+                        type="number" 
+                        formControlName="inStock"
+                        placeholder="How many in stock">
+                <input 
+                        class="form-control mr-sm-2 mt-1"
+                        type="number" 
+                        formControlName="soldItems" 
+                        placeholder="How many sold"> -->
+                <app-text-input [formControl]="addProductForm.controls['category']" [label]="'Category'"></app-text-input>
+                <app-text-input [formControl]="addProductForm.controls['price']" [label]="'Price'" type="number"></app-text-input>
+                <app-text-input [formControl]="addProductForm.controls['inStock']" [label]="'In Stock'" type="number"></app-text-input>
+                <app-text-input [formControl]="addProductForm.controls['soldItems']" [label]="'How many items sold'" type="number"></app-text-input>
+        <div>
+                <button [disabled]="!addProductForm.valid" type="submit" class="btn btn-success my-2 my-sm-1" >Add Product</button>
+        </div>
+        </form>
+</div>
 <!-- For controlling the carousel -->
 <!-- <div>
     <button type="button" class="btn btn-info"

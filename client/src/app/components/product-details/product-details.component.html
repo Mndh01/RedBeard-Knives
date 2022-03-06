@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="row" *ngIf="product">
+        <div class="col-4">
+            <div class="card">
+                <img src="{{product.photoUrl || '../../../assets/Old-site/images/rb_logo_metal_print.png'}}" alt="{{product.category}}" class="card-img-top img-thumbnail">
+                <div class="card-body">
+                    <div>
+                        <strong>Category: </strong>
+                        <p>{{product.category}}</p>
+                    </div>
+                    <div>
+                        <strong>Price: </strong>
+                        <p>{{product.price}}</p>
+                    </div>
+                    <div>
+                        <strong>In stock: </strong>
+                        <p>{{product.inStock}}</p>
+                    </div>
+                    <div>
+                        <strong>Sold: </strong>
+                        <p>{{product.soldItems}}</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group d-flex">
+                        <button class="btn btn-warning">Edit</button>
+                        <button class="btn btn-danger" (click)="deleteProduct()">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <tabset class="product-tabset">
+                <tab heading="About">
+                    <h4>Description:</h4>
+                    <p>{{product.category}}</p>
+                </tab>
+                <tab heading="Photos">
+                    <ngx-gallery [options]="galleryOptions" [images]="galleryImages" 
+                        style="display: inline-block; margin-bottom: 20px;">
+                    </ngx-gallery>
+                </tab>
+                <tab heading="Comments">
+                    <p>Comments will go here</p>
+                </tab>
+                <h4></h4>
+            </tabset>
+        </div>
+    </div>
+</div>

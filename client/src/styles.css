@@ -39,3 +39,7 @@ body {
 ::-webkit-scrollbar {
     display: none;
 }
+
+.product-tabset > .nav-tabs > li:hover > a {
+    border-bottom: 1px var(--main-color) solid;
+}

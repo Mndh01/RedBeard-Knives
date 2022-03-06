@@ -10,32 +10,35 @@ import { ProductsService } from 'src/app/services/products.service';
 export class ProductsComponent implements OnInit {
   products: Product[];
   categoryList: Array<string> = ['axe', 'web developer', 'Software Engineer','IT', 'web developer', 'Software Engineer','IT'];
-  category:string | undefined = this.categoryList[0]; 
-  price:number;
-  inStock:number;
-  soldItems:number;
-  checkedInput:any;
+  category:string = ''; 
+  inputPrice:any; price:number;
+  inStock:number = -1; soldItems:number = -1;
+  
   constructor(private productService: ProductsService) { }
 
   ngOnInit() {
   }
 
   getProducts() {
-    this.productService.getProducts(this.category, this.price, this.inStock, this.soldItems).subscribe(data => {
+    this.checkPrice();
+    this.productService.setParams(this.category, this.price, this.inStock, this.soldItems);
+    
+    this.productService.getProducts().subscribe(data => {
       this.products = data;
-      localStorage.setItem("product",JSON.stringify(data));
+      localStorage.setItem("product",JSON.stringify(data));      
     }, error => {
       console.log(error);
     });
   }
 
-  getType(category:string){
-    this.category = category;
-    // this.checkedInput = document.querySelectorAll(".selectopt")?.forEach(element => {
-    //   if (element.hasAttribute("checked")){
-    //     this.checkedInput = element;
-    //     console.log(this.checkedInput)
-    //   }
-    // });
+  getCategory(category:string){
+    this.category = category;      
+  }
+  checkPrice(){
+    if (this.inputPrice > 0 && this.inputPrice < 9999999999999){
+      this.price = this.inputPrice;
+    }else{
+      this.price = -1;
+    }
   }
 }
