@@ -46,6 +46,7 @@ export class ProductDetailsComponent implements OnInit {
   loadProduct() { 
     this.productService.getProductById(+this.route.snapshot.paramMap.get('id')).subscribe(product => {
       this.product = product;
+      localStorage.setItem("product",JSON.stringify(product));      
       this.galleryImages = this.getImages();
     }, error => {console.log(error); })
   }
@@ -55,4 +56,4 @@ export class ProductDetailsComponent implements OnInit {
       console.log(response);
     }, error => {console.log(error);} );
   }
-}
+} 

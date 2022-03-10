@@ -17,6 +17,7 @@ export class ProductsComponent implements OnInit {
   constructor(private productService: ProductsService) { }
 
   ngOnInit() {
+    this.getProducts();
   }
 
   getProducts() {
@@ -25,7 +26,7 @@ export class ProductsComponent implements OnInit {
     
     this.productService.getProducts().subscribe(data => {
       this.products = data;
-      localStorage.setItem("product",JSON.stringify(data));      
+      localStorage.setItem("products",JSON.stringify(data));     
     }, error => {
       console.log(error);
     });

@@ -6,7 +6,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { TabsModule } from 'ngx-bootstrap/tabs'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
-
+import { FileUploadModule } from 'ng2-file-upload'
 
 
 @NgModule({
@@ -20,6 +20,7 @@ import { NgxGalleryModule } from '@kolkov/ngx-gallery';
     ReactiveFormsModule,
     TabsModule.forRoot(),
     NgxGalleryModule,
+    FileUploadModule,
   ],
   exports: [
     CarouselModule,
@@ -29,6 +30,7 @@ import { NgxGalleryModule } from '@kolkov/ngx-gallery';
     ReactiveFormsModule,
     TabsModule,
     NgxGalleryModule,
+    FileUploadModule,
   ]
 })
 export class SharedModule { }

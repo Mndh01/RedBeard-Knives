@@ -69,9 +69,10 @@ namespace API.Controllers
         }
         
         [HttpPost("add-photo")]
-        public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
+        public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file, int id)
         {
-            var product = await _productRepository.GetProductByIdAsync(1);
+            
+            var product = await _productRepository.GetProductByIdAsync(id);
 
             var result = await _photoService.AddPhotoAsync(file);
 
@@ -92,12 +93,24 @@ namespace API.Controllers
 
             if (await _productRepository.SaveAllAsync())
             {
-                return CreatedAtRoute("GetProduct", 1, _mapper.Map<PhotoDto>(photo));
-
+                return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
             }
 
             return BadRequest("Problem adding the photo...");
+        }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateProduct(ProductUpdateDto productUpdateDto) 
+        {
+            var product = await _productRepository.GetProductByIdAsync(productUpdateDto.Id);
+
+            _mapper.Map(productUpdateDto, product);
+
+            _productRepository.Update(product);
+
+            if (await _productRepository.SaveAllAsync()) return NoContent();
+
+            return BadRequest("Failed to update product..");
         }
     }
 }

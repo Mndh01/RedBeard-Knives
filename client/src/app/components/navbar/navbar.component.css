@@ -7,6 +7,7 @@
 
 .navbar {
     background-image: linear-gradient(180deg, #3b3b3b , rgba(100 100 100 / 1), #3b3b3b);
+    margin-bottom: 10px;
 }
 #navbarNavDropdown {
     justify-content: space-between;

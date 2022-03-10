@@ -18,6 +18,7 @@ import { ToTopComponent } from './components/to-top/to-top.component';
 import { TextInputComponent } from './components/text-input/text-input.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
+import { ProductEditComponent } from './components/product-edit/product-edit.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { PhotoEditorComponent } from './components/photo-editor/photo-editor.com
     TextInputComponent,
     ProductDetailsComponent,
     PhotoEditorComponent,
+    ProductEditComponent,
   ],
   imports: [
     BrowserModule,

@@ -17,5 +17,6 @@ namespace API.Interfaces
         bool DeleteProduct(int id);
         Task<IEnumerable<ItemDto>> GetItemsAsync(string category, int price, int inStock, int soldItems);
         Task<ItemDto> GetItemAsync(int id);
+        void Update(Product product);
     }
 }

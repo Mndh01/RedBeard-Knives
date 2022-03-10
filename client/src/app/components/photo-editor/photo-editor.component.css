@@ -1,0 +1,28 @@
+.uploaderFlex {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+input[type=file] {
+    position: absolute;
+    left: -9999999999px;
+}
+
+.nv-file-over {
+    color: var(--secondary-color);
+    background-color: var(--main-color);
+}
+
+.nv-file-over i {
+    color: var(--secondary-color);
+}
+.input-label {
+    text-align: center;
+    width: 100%;
+    background-color: #32383e;
+    user-select: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

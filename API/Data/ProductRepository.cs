@@ -102,5 +102,10 @@ namespace API.Data
                 .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
         }
+
+        public void Update(Product product)
+        {
+            _context.Entry(product).State = EntityState.Modified;
+        }
     }
 }

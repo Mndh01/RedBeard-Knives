@@ -12,6 +12,25 @@ body {
     background-color: var(--secondary-color) !important;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number]:not(.color-exclude), input[type=number]:not(.color-exclude):focus {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    color: var(--main-color);
+    border: 1px var(--main-color) solid;
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+}
+
+input {
+    padding-left: 7px;
+}
+
 .dropdown-menu {
     background-image: linear-gradient(180deg, #3b3b3b , rgba(100 100 100 / 1), rgba(59 59 59 / 1));
 }

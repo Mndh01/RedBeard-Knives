@@ -7,8 +7,8 @@ import { Product } from '../models/Product';
   providedIn: 'root'
 })
 export class ProductsService {
-  baseUrl = environment.apiUrl;
   fakeUrl = "../assets/products.json"
+  baseUrl = environment.apiUrl;
   params = new HttpParams();
 
   constructor(private http: HttpClient) { }
@@ -26,6 +26,10 @@ export class ProductsService {
 
   getProductById(id: number){
     return this.http.get<Product>(this.baseUrl + "products/" + id);
+  }
+
+  updateProduct(product: Product) {
+    return this.http.put(this.baseUrl + 'products', product)
   }
 
   deleteProduct(id: number) {

@@ -1,13 +1,6 @@
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
   /* Firefox */
   input[type=number] {
-    -webkit-appearance: textfield;
-    -moz-appearance: textfield;
-    width: 100px; border: 1px var(--main-color) solid;
+    width: 100px; 
   }
 
   *{
