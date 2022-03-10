@@ -62,3 +62,22 @@ input {
 .product-tabset > .nav-tabs > li:hover > a {
     border-bottom: 1px var(--main-color) solid;
 }
+
+.ml-1 {
+    margin-left: 2px;
+}
+.ml-2 {
+    margin-left: 5px;
+}
+.ml-3 {
+    margin-left: 10px;
+}
+.mr-1 {
+    margin-right: 2px;
+}
+.mr-2 {
+    margin-right: 5px;
+}
+.mr-3 {
+    margin-right: 10px;
+}

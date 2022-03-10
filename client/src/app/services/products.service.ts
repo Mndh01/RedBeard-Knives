@@ -18,7 +18,6 @@ export class ProductsService {
     this.params = this.params.set("price", price);
     this.params = this.params.set("inStock", inStock);
     this.params = this.params.set("soldItems", soldItems);
-
   }
   getProducts(){
     return this.http.get<Product[]>(this.baseUrl + "products",  { params: this.params });  
@@ -32,7 +31,16 @@ export class ProductsService {
     return this.http.put(this.baseUrl + 'products', product)
   }
 
+  
   deleteProduct(id: number) {
     return this.http.delete(this.baseUrl + "products/" + id)
+  }
+  
+  updateMainPhoto(Params:HttpParams) {
+    return this.http.put(this.baseUrl + "products/set-main-photo", null, { params: Params });
+  }
+
+  deletePhoto(params: HttpParams) {
+    return this.http.delete(this.baseUrl + 'products/delete-photo', { params: params });
   }
 }

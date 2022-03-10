@@ -1,6 +1,6 @@
 <div class=".container-fluid">
     <div class="row">
-        <div *ngFor="let product of products" class="col-sm-2" routerLink="/products/{{product.id}}">
+        <div *ngFor="let product of products" class="col-sm-4" routerLink="/products/{{product.id}}">
             <div class="card mb-2">
                 <img src="{{product.photoUrl || '../../../assets/Old-site/images/rb_logo_metal_print.png'}}" class="card-img-top" alt="image not availabe">
                 <div class="card-body p-1">

@@ -11,7 +11,7 @@ import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
-import { NotFoundComponent } from './components/not-found/not-found.component';
+import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { ToTopComponent } from './components/to-top/to-top.component';
@@ -19,6 +19,9 @@ import { TextInputComponent } from './components/text-input/text-input.component
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
 import { ProductEditComponent } from './components/product-edit/product-edit.component';
+import { TestErrorsComponent } from './errors/test-errors/test-errors.component';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { ServerErrorComponent } from './errors/server-error/server-error.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +38,8 @@ import { ProductEditComponent } from './components/product-edit/product-edit.com
     ProductDetailsComponent,
     PhotoEditorComponent,
     ProductEditComponent,
+    TestErrorsComponent,
+    ServerErrorComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,6 +49,7 @@ import { ProductEditComponent } from './components/product-edit/product-edit.com
     BrowserAnimationsModule,
   ],
   providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi:true},
     {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi:true},
   ],
   bootstrap: [AppComponent]
