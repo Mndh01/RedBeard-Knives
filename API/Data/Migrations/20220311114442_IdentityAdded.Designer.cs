@@ -3,14 +3,16 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220311114442_IdentityAdded")]
+    partial class IdentityAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,9 +26,6 @@ namespace API.Data.Migrations
 
                     b.Property<string>("AddressParts")
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -109,9 +108,6 @@ namespace API.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PhotoUserId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
 
@@ -131,8 +127,6 @@ namespace API.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PhotoUserId");
-
                     b.ToTable("AspNetUsers");
                 });
 
@@ -149,28 +143,6 @@ namespace API.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-                });
-
-            modelBuilder.Entity("API.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("API.Models.Photo", b =>
@@ -244,8 +216,11 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Models.UserPhoto", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AppUserId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
@@ -254,7 +229,10 @@ namespace API.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
 
                     b.ToTable("UserPhoto");
                 });
@@ -343,13 +321,6 @@ namespace API.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("API.Models.AppUser", b =>
-                {
-                    b.HasOne("API.Models.UserPhoto", "Photo")
-                        .WithMany()
-                        .HasForeignKey("PhotoUserId");
-                });
-
             modelBuilder.Entity("API.Models.AppUserRole", b =>
                 {
                     b.HasOne("API.Models.AppRole", "Role")
@@ -363,13 +334,6 @@ namespace API.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("API.Models.Comment", b =>
-                {
-                    b.HasOne("API.Models.Product", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("API.Models.Photo", b =>
@@ -392,6 +356,15 @@ namespace API.Data.Migrations
                     b.HasOne("API.Models.AppUser", "User")
                         .WithMany("UserAddresses")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("API.Models.UserPhoto", b =>
+                {
+                    b.HasOne("API.Models.AppUser", "User")
+                        .WithOne("Photo")
+                        .HasForeignKey("API.Models.UserPhoto", "AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

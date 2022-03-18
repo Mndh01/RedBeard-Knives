@@ -44,6 +44,18 @@ namespace API.Controllers
             
             return BadRequest("Couldn't find products with such properties...");
         }
+
+        [HttpPost("add-product")]
+        public async Task<ActionResult<Product>> AddProduct(Product product) 
+        {
+            var newProduct  = _mapper.Map<Product>(product);
+            newProduct.Category = newProduct.Category.ToLower();
+            
+            if(await _productRepository.AddProductAsync(newProduct))
+                return Ok(newProduct);
+
+            return BadRequest("Failed to add product");               
+        }
         
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file, int id)
@@ -73,20 +85,7 @@ namespace API.Controllers
                 return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
             }
 
-            return BadRequest("Problem adding the photo...");
-        }
-
-        
-        [HttpPost("add-product")]
-        public async Task<ActionResult<Product>> AddProduct(Product product) 
-        {
-            var newProduct  = _mapper.Map<Product>(product);
-            newProduct.Category = newProduct.Category.ToLower();
-            
-            if(await _productRepository.AddProductAsync(newProduct))
-                return Ok(newProduct);
-
-            return BadRequest("Failed to add product");               
+            return BadRequest("Failed to add the photo..");
         }
 
         [HttpDelete("{id}")]
@@ -95,9 +94,9 @@ namespace API.Controllers
             var result = _productRepository.DeleteProduct(id);
 
             if (result)
-                return Ok("Deleted successfully");
+                return Ok("Deleted successfully.");
             
-            return BadRequest("Failed to remove product");
+            return BadRequest("Failed to remove product..");
         }
 
         [HttpDelete("delete-photo")]
@@ -120,7 +119,7 @@ namespace API.Controllers
 
             if (await _productRepository.SaveAllAsync()) return Ok();
 
-            return BadRequest("Failed to delete the photo");
+            return BadRequest("Failed to delete the photo..");
         }
         
         [HttpPut]
@@ -153,7 +152,7 @@ namespace API.Controllers
 
             if (await _productRepository.SaveAllAsync()) return NoContent();
 
-            return BadRequest("Failed to set main photo");
+            return BadRequest("Failed to set main photo..");
         }
     }
 }
