@@ -41,6 +41,7 @@ namespace API.Services
 
             address.UserAddresses.Add(userAddress);
 
+            if (!await SaveAllAsync()) return null;
 
             return await _context.UserAddresses.Include(ua => ua.Address)
                     .Include(ua => ua.User)
@@ -50,25 +51,23 @@ namespace API.Services
                     .ToListAsync();
         }
 
-        public Task<bool> DeleteAddressAsync(AddressDto address, AppUser user)
+        public bool AddressExistsForUserById(AppUser user,int addressId)
         {
-            throw new NotImplementedException();
+            var address = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.Id == addressId);
+
+            if (address != null) return true;
+
+            return false;
         }
 
-        public Task<AddressDto> EditAddressAsync(AddressDto address, AppUser user)
+        public async Task<bool> DeleteAddressAsync(Address address)
         {
-            throw new NotImplementedException();
+            _context.Addresses.Remove(address);
+
+            if (await SaveAllAsync()) return true;
+
+            return false;
         }
-
-        // public async Task<bool> SetCurrentAddressAsync(int addressId, AppUser user)
-        // {
-
-        // }
-
-        // public async Task<Address> GetAddressAsync(Address address)
-        // {
-        //     return await _context.Addresses.FirstOrDefaultAsync(x => x.Id == address.Id);
-        // }
 
         public async Task<bool> SaveAllAsync()
         {

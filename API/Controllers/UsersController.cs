@@ -62,7 +62,7 @@ namespace API.Controllers
         {
             if (newPhoto == null) return BadRequest("Invalid file..");
 
-            var user = await _userManager.FindByEmailAsync(User.GetEmail());
+            var user = await _userRepository.GetUserByEmailAsync(User.GetEmail());
             
             if (user == null) return BadRequest("Failed to find user to change their photo..");
 
@@ -71,6 +71,8 @@ namespace API.Controllers
                 var deleteResult = await _photoService.DeletePhotoAsync(user.Photo.PublicId);
                 
                 if(deleteResult.Error != null) return BadRequest(deleteResult.Error.Message);
+
+                _context.Remove(user.Photo);
             }
 
             var result = await _photoService.AddPhotoAsync(newPhoto);
@@ -86,15 +88,11 @@ namespace API.Controllers
             
             user.Photo = photo;
             
-            _userRepository.Update(user);
-            // var updateResult = await _userManager.UpdateAsync(user);
-            
-            // UserPhotoDto photoToReturn = new UserPhotoDto{};
-
-            // _mapper.Map(user.Photo, photoToReturn);
-            // if (updateResult.Errors.Count() > 0) await _photoService.DeletePhotoAsync(photo.PublicId);
+            // _userRepository.Update(user);
 
             if (await _userRepository.SaveAllAsync()) return Ok(photo);
+
+            await _photoService.DeletePhotoAsync(photo.PublicId);
 
             return BadRequest("Failed to update photo..");
         }

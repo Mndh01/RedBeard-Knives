@@ -7,6 +7,7 @@ using API.Extensions;
 using API.Interfaces;
 using API.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -93,7 +94,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.Users
+            var user = await _context.Users
                 .Include(p => p.Photo)
                 .Include(a => a.UserAddresses)
                 .ThenInclude(ua => ua.Address)
@@ -101,7 +102,7 @@ namespace API.Controllers
 
             if(user == null) return Unauthorized("Invalid Email..");
 
-            var address = user.UserAddresses.SingleOrDefault(ua => ua.Address.IsCurrent).Address;
+            var address = user.UserAddresses.Select(ua => ua.Address).SingleOrDefault(a => a.IsCurrent);
 
             var result = await _signInManager
                 .CheckPasswordSignInAsync(user, loginDto.Password, false);
@@ -123,6 +124,7 @@ namespace API.Controllers
             };
         }
 
+        [Authorize]
         [HttpDelete("delete-user")]
         public async Task<ActionResult> DeleteUser()
         {

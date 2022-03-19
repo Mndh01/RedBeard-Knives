@@ -80,10 +80,7 @@ namespace API.Controllers
 
             product.Photos.Add(photo);
 
-            if (await _productRepository.SaveAllAsync())
-            {
-                return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
-            }
+            if (await _productRepository.SaveAllAsync()) return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
 
             return BadRequest("Failed to add the photo..");
         }

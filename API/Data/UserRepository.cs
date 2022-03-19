@@ -58,6 +58,15 @@ namespace API.Data
                 .FirstOrDefaultAsync(x => x.UserName == username);
         }
 
+        public async Task<AppUser> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users
+                .Include(p => p.Photo)
+                .Include(ua => ua.UserAddresses)
+                .ThenInclude(ua => ua.Address)
+                .FirstOrDefaultAsync(x => x.Email == email);
+        }
+
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             return await _context.Users
@@ -77,13 +86,5 @@ namespace API.Data
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<AppUser> GetUserByEmailAsync(string email)
-        {
-            return await _context.Users
-                .Include(p => p.Photo)
-                .Include(ua => ua.UserAddresses)
-                .ThenInclude(ua => ua.Address)
-                .FirstOrDefaultAsync(x => x.Email == email);
-        }
     }
 }

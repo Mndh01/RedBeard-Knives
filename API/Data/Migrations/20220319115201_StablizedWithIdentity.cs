@@ -15,17 +15,13 @@ namespace API.Data.Migrations
                 name: "IX_UserPhoto_AppUserId",
                 table: "UserPhoto");
 
-            migrationBuilder.DropColumn(
-                name: "AppUserId",
-                table: "UserPhoto");
-
             migrationBuilder.RenameColumn(
-                name: "Id",
+                name: "AppUserId",
                 table: "UserPhoto",
                 newName: "UserId");
 
             migrationBuilder.AddColumn<int>(
-                name: "PhotoUserId",
+                name: "PhotoId",
                 table: "AspNetUsers",
                 type: "INTEGER",
                 nullable: true);
@@ -59,9 +55,9 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_PhotoUserId",
+                name: "IX_AspNetUsers_PhotoId",
                 table: "AspNetUsers",
-                column: "PhotoUserId");
+                column: "PhotoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_ProductId",
@@ -69,29 +65,29 @@ namespace API.Data.Migrations
                 column: "ProductId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_UserPhoto_PhotoUserId",
+                name: "FK_AspNetUsers_UserPhoto_PhotoId",
                 table: "AspNetUsers",
-                column: "PhotoUserId",
+                column: "PhotoId",
                 principalTable: "UserPhoto",
-                principalColumn: "UserId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUsers_UserPhoto_PhotoUserId",
+                name: "FK_AspNetUsers_UserPhoto_PhotoId",
                 table: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Comment");
 
             migrationBuilder.DropIndex(
-                name: "IX_AspNetUsers_PhotoUserId",
+                name: "IX_AspNetUsers_PhotoId",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
-                name: "PhotoUserId",
+                name: "PhotoId",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
@@ -101,14 +97,7 @@ namespace API.Data.Migrations
             migrationBuilder.RenameColumn(
                 name: "UserId",
                 table: "UserPhoto",
-                newName: "Id");
-
-            migrationBuilder.AddColumn<int>(
-                name: "AppUserId",
-                table: "UserPhoto",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: 0);
+                newName: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserPhoto_AppUserId",

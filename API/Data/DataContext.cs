@@ -34,20 +34,25 @@ namespace API.Data
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
             
-            builder.Entity<Address>()
-                .HasMany(ua => ua.UserAddresses)
-                .WithOne(a => a.Address)
-                .HasForeignKey(ua => ua.AddressId)
-                .IsRequired();
-
             builder.Entity<AppUser>()
                 .HasMany(ua => ua.UserAddresses)
                 .WithOne(u => u.User)
                 .HasForeignKey(ua => ua.UserId)
                 .IsRequired();
 
+            builder.Entity<Address>()
+                .HasMany(ua => ua.UserAddresses)
+                .WithOne(a => a.Address)
+                .HasForeignKey(ua => ua.AddressId)
+                .IsRequired();
+
             builder.Entity<UserAddresses>()
                 .HasKey(k => new {k.AddressId, k.UserId});
+
+            // builder.Entity<AppUser>()
+            //     .HasOne(u => u.Photo)
+            //     .WithOne<AppUser>();
+
         }
     }
 }

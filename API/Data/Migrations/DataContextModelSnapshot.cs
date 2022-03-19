@@ -109,7 +109,7 @@ namespace API.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PhotoUserId")
+                    b.Property<int?>("PhotoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("SecurityStamp")
@@ -131,7 +131,7 @@ namespace API.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PhotoUserId");
+                    b.HasIndex("PhotoId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -244,7 +244,7 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Models.UserPhoto", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -254,7 +254,10 @@ namespace API.Data.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
 
                     b.ToTable("UserPhoto");
                 });
@@ -347,7 +350,7 @@ namespace API.Data.Migrations
                 {
                     b.HasOne("API.Models.UserPhoto", "Photo")
                         .WithMany()
-                        .HasForeignKey("PhotoUserId");
+                        .HasForeignKey("PhotoId");
                 });
 
             modelBuilder.Entity("API.Models.AppUserRole", b =>
