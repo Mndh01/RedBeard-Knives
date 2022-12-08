@@ -23,9 +23,9 @@ namespace API.Controllers
         }
         
         [HttpGet("{id}", Name = "GetProduct")]
-        public async Task<ActionResult<ItemDto>> GetProductById(int id) 
+        public async Task<ActionResult<Product>> GetProductById(int id) 
         {   
-            var product = await _productRepository.GetItemAsync(id);  
+            var product = await _productRepository.GetItemAsync(id);
 
             if (product != null)
             {
@@ -35,7 +35,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string category, int price=-1, int inStock=-1, int soldItems=-1) 
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string category="", int price=-1, int inStock=-1, int soldItems=-1) 
         {
             var products = await _productRepository.GetItemsAsync(category, price, inStock, soldItems);
 
@@ -49,8 +49,13 @@ namespace API.Controllers
         public async Task<ActionResult<Product>> AddProduct(Product product) 
         {
             var newProduct  = _mapper.Map<Product>(product);
-            newProduct.Category = newProduct.Category.ToLower();
             
+            newProduct.Name = newProduct.Name.ToLower();
+            
+            if (await _productRepository.CheckProductExistsByName(newProduct.Name) != null) return BadRequest("Name already exists for another product..");
+
+            newProduct.Category = newProduct.Category.ToLower();
+                        
             if(await _productRepository.AddProductAsync(newProduct))
                 return Ok(newProduct);
 
@@ -122,6 +127,10 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateProduct(ProductUpdateDto productUpdateDto) 
         {
+            productUpdateDto.Name = productUpdateDto.Name.ToLower();
+
+            productUpdateDto.Category = productUpdateDto.Category.ToLower();
+            
             var product = await _productRepository.GetProductByIdAsync(productUpdateDto.Id);
 
             _mapper.Map(productUpdateDto, product);

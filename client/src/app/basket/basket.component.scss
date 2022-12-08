@@ -1,0 +1,46 @@
+@import "~src/styles.scss";
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    // margin: 0;
+}
+
+.icon-span {
+    width: 30%;
+    height: 50px;
+    background-color: $primary-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    cursor: pointer;
+
+    i {
+        font-size: 1.5rem;
+    }
+    .fa::before {
+        color: initial;
+    }
+}
+
+.left-span {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+    // margin-left: 12px;
+}
+.right-span {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.description-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.btn-primary {
+    background-color: $primary-color !important;
+    background-image: none;
+}

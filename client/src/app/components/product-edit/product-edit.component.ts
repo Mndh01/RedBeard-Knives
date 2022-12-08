@@ -1,12 +1,12 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Product } from 'src/app/models/Product';
+import { Product } from 'src/app/shared/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({
   selector: 'app-product-edit',
   templateUrl: './product-edit.component.html',
-  styleUrls: ['./product-edit.component.css']
+  styleUrls: ['./product-edit.component.scss']
 })
 export class ProductEditComponent implements OnInit {
   @ViewChild('editForm') editform: NgForm;

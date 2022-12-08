@@ -1,0 +1,49 @@
+<div *ngIf="slides" class="carousel row">
+    <div #stage class="carousel-stage my-4">
+        <img [ngStyle]='{"visibility": "hidden","width": "80%","padding": "0 12px", "order": "-100", "overflow": "hidden" }' src="../../../assets/Toga.png" alt="Here is a photo" draggable="false">
+        <div #slide [id]="slide.id" *ngFor="let slide of slides; let i = index" class="slide" >
+            <img [src]="slide.image" alt="Here is a photo" draggable="false">
+            <div class="caption">
+                <h3>This is H3 {{slide.id}}</h3>
+                <p>This is a paragraph</p>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary slide-btn" style="left: 2rem;" (click)="preventMultipleClicks(-1)" title="Previous slide" type="button"><i class="fa fa-arrow-left"></i></button>
+    <button class="btn btn-primary slide-btn" style="right: 2rem" (click)="preventMultipleClicks(1)" title="Next slide" type="button"><i class="fa fa-arrow-right"></i></button>
+</div>
+
+<!-- Old carousel -->
+<!-- <carousel [(activeSlide)]="activeSlideIndex" class="row" >
+    <slide *ngFor="let slide of slides; let index=index" class="col-sm-12 col-md-6 col-lg-4">
+        <img [src]="slide.image" alt="image slide" class="fade">
+
+        <div class="carousel-caption">
+            <p>{{slide.text}}</p>
+        </div>
+    </slide>
+</carousel> -->
+
+<!-- ../../../assets/Toga.png -->
+<!-- ('+ windowWidth * (8 / 10) * index + 'px)  // The width of image  (need to make a variable computed depending on wanted number of slides per page instead)-->
+<!--         <div #slide [id]="i" *ngFor="let slide of slides; let i = index" class="slide" [ngStyle]="{'transform': 'translateX(' + (100 * i) +' %);'}">
+ -->
+ <!-- <div #slide [id]="slide.id" *ngFor="let slide of slides" class="slide" [ngStyle]="{'transform': 'translateX(' + 100 * slide.id + '%)'}" >  [ngStyle]="{'transform': 'translateX(' + 100 * slide.id + '%)'}" -->
+
+
+<!-- Owl carousel -->
+<!-- <owl-carousel-o [options]="customOptions">
+    
+    <ng-container *ngFor="let slide of slides; let index=index">
+      <ng-template carouselSlide [id]="slide.id">
+        <div class="wrapper">
+            <img [src]="slide.image" alt="Photo">
+            <div class="caption">
+                <h3>This is H3 {{index}}</h3>
+                <p>This is a paragraph</p>
+            </div>
+        </div>
+      </ng-template>
+    </ng-container>
+
+  </owl-carousel-o> -->

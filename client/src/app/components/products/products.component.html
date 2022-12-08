@@ -35,5 +35,7 @@
         <button type="submit" class="btn btn-primary" (click)="getProducts()">click me</button>
     </form>
     <div class="divider"></div>
-    <app-product-card [products]="products"></app-product-card>
+    <ng-container *ngFor="let product of products">
+        <app-product-item [product]="product"></app-product-item>
+    </ng-container>
 </div>

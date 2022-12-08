@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Models;
@@ -24,10 +22,11 @@ namespace API
             try
             {
                 var context = services.GetRequiredService<DataContext>();
+                var config = services.GetRequiredService<IConfiguration>();
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
                 await context.Database.MigrateAsync();
-                await Seed.SeedThings(userManager, roleManager);
+                await Seed.SeedThings(userManager, roleManager, context, config);
             }
             catch (Exception ex)
             {

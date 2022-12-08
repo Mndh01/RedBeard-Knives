@@ -5,7 +5,7 @@ import { AdminService } from 'src/app/services/admin-service.service';
 @Component({
   selector: 'app-admin-panel',
   templateUrl: './admin-panel.component.html',
-  styleUrls: ['./admin-panel.component.css']
+  styleUrls: ['./admin-panel.component.scss']
 })
 export class AdminPanelComponent implements OnInit {
   addProductForm: FormGroup;
@@ -18,8 +18,10 @@ export class AdminPanelComponent implements OnInit {
   
   initializeForm() {
     this.addProductForm = this.fb.group({
+      name: ['',Validators.required],
       category: ['',Validators.required],
       price: ['',Validators.required],
+      description: ['',Validators.required],
       inStock: ['',Validators.required],
       soldItems: ['',Validators.required]
     })
@@ -28,6 +30,7 @@ export class AdminPanelComponent implements OnInit {
   addProduct() {
     this.adminService.addProduct(this.addProductForm.value).subscribe(response =>{
       console.log(response);
+      this.addProductForm.reset();
     }, error => {
       console.log(error);
     })

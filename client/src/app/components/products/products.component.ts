@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from 'src/app/models/Product';
+import { Product } from 'src/app/shared/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.css']
+  styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
   products: Product[];
   categoryList: Array<string> = ['axe', 'web developer', 'Software Engineer','IT', 'web developer', 'Software Engineer','IT'];
   category:string = ''; 
-  inputPrice:any; price:number;
+  inputPrice: number; price:number;
   inStock:number = -1; soldItems:number = -1;
   
   constructor(private productService: ProductsService) { }
@@ -23,10 +23,8 @@ export class ProductsComponent implements OnInit {
   getProducts() {
     this.checkPrice();
     this.productService.setParams(this.category, this.price, this.inStock, this.soldItems);
-    
     this.productService.getProducts().subscribe(data => {
       this.products = data;
-      localStorage.setItem("products",JSON.stringify(data));     
     }, error => {
       console.log(error);
     });
@@ -36,7 +34,7 @@ export class ProductsComponent implements OnInit {
     this.category = category;      
   }
   checkPrice(){
-    if (this.inputPrice > 0 && this.inputPrice < 9999999999999){
+    if (this.inputPrice > 0 && this.inputPrice < Number.POSITIVE_INFINITY){
       this.price = this.inputPrice;
     }else{
       this.price = -1;

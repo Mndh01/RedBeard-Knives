@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    
+    [Authorize]
     public class UsersController : BaseApiController
     {
         private readonly IMapper _mapper;
@@ -21,12 +23,12 @@ namespace API.Controllers
         private readonly DataContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserRepository _userRepository;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenService _tokenService;
         public UsersController(DataContext context, IUserRepository userRepository,
-                UserManager<AppUser> userManager, IPhotoService photoService, IMapper mapper,
-                SignInManager<AppUser> signInManager)
+            UserManager<AppUser> userManager, IPhotoService photoService, IMapper mapper,
+            ITokenService tokenService)
         {
-            _signInManager = signInManager;
+            _tokenService = tokenService;
             _userRepository = userRepository;
             _userManager = userManager;
             _context = context;
@@ -35,7 +37,7 @@ namespace API.Controllers
 
         }
 
-        [Authorize]
+        [Authorize(Policy="RequireAdminRole")]
         [HttpGet("get-users")]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
@@ -47,6 +49,7 @@ namespace API.Controllers
             return BadRequest("Failed to fetch users..");
         }
 
+        [Authorize]
         [HttpGet("get-user/{id}", Name = "get-user")]
         public async Task<ActionResult<MemberDto>> GetUserById(int id)
         {
@@ -57,6 +60,20 @@ namespace API.Controllers
             return BadRequest("Failed to find user..");
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            var user = await _userRepository.GetUserByEmailAsync(User?.GetEmail());
+
+            return new UserDto
+            {
+                Email = user.Email,
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+        
         [HttpPut("change-photo")]
         public async Task<ActionResult<bool>> ChangePhoto(IFormFile newPhoto)
         {
@@ -88,8 +105,6 @@ namespace API.Controllers
             
             user.Photo = photo;
             
-            // _userRepository.Update(user);
-
             if (await _userRepository.SaveAllAsync()) return Ok(photo);
 
             await _photoService.DeletePhotoAsync(photo.PublicId);

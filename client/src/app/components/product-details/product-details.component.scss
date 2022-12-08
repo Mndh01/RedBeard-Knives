@@ -1,0 +1,27 @@
+.img-thumbnail {
+    margin: 7.5%;
+    width: 85%;
+    height: 85%;
+}
+
+.card-body {
+    padding: 0 25px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-footer {
+    padding: 10px 15px;
+    background-color: var(--secondary-color);
+    border-top: none;
+}
+
+.addToBasket {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 5px;
+}

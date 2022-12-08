@@ -1,0 +1,68 @@
+<div class="container mt-5">
+  <form class="row" *ngIf="step === 1" [formGroup]="registerForm">      
+    
+    <h1 class="h3 mb-3 fw-normal">Account information: </h1>
+    <div class="registerNameWrapper row">
+      <select class="col-2 color-exclude" formControlName="gender" [label]="'Gender'" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'black'}">
+        <option value="" selected disabled hidden>Title</option>
+        <option value="Male" >Mr.</option>
+        <option value="Female">Ms.</option>
+      </select>
+      <app-text-input class="col-5" id="nameInput" formControlName="firstName" [label]="'Name'" [option]="'alphabet'"></app-text-input>
+      <app-text-input class="col-5" id="sureNameInput" formControlName="sureName" [label]="'Surename'" [option]="'alphabet'"></app-text-input>
+    </div>
+
+    <app-text-input formControlName="email" [label]="'Email Address'"></app-text-input>
+    <app-text-input formControlName="password" [label]="'Password'" [type]="'password'" (keyup)="confirmPassword()"></app-text-input>
+    <app-text-input formControlName="passwordConfirm" [label]="'Confirm password'" [type]="'password'" (keyup)="confirmPassword()"></app-text-input>
+    <p *ngIf="registerForm.controls.passwordConfirm.dirty && !passwordConfirmed" class="text-danger">This field must be the same as the password</p>
+    
+    <div>
+      <input class="form-control" type="text" formControlName="phoneNumber"
+      ng2TelInput
+      [ng2TelInputOptions]="{initialCountry: 'US'}"
+      (hasError)="hasError($event)"
+      (ng2TelOutput)="getNumber($event)"
+      (intlTelInputObject)="telInputObject($event)"
+      (countryChange)="onCountryChange($event)"
+      (keypress)="allowNumericOnly($event)"/>      
+      <p *ngIf="registerForm.controls.phoneNumber.dirty && !numberIsValid" class="text-danger">Invalid Number</p>
+      <div class="date-wrapper">
+        <input 
+        readonly ngbDatepicker
+        class="col-12"
+        formControlName="dateOfBirth"
+        #d="ngbDatepicker" 
+        placeholder="Date of birth" 
+        (click)="!completed && d.toggle(); 
+        $event.stopPropagation()"
+        (document:click)="closeFix($event, d)"
+        [minDate]="{year: 1920, month: 1, day: 1}"
+        [maxDate]="selectToday()"
+        >
+        <i class="fa fa-calendar"></i>
+      </div>      
+    </div>
+    <div>
+      <button class="w-100 btn btn-lg btn-primary" type="button" (click)="moveStep(+1)"
+      [disabled]="!(registerForm.valid && numberIsValid && passwordConfirmed)">Next &rarr;</button>
+    </div>
+    
+  </form>
+  
+  <form *ngIf="step === 2" [formGroup]="addressForm" (ngSubmit)="onSubmit()">
+    <h1 class="h3 mb-3 fw-normal">Address</h1>
+    <app-text-input formControlName="country" [label]="'Country'"></app-text-input>
+    <app-text-input formControlName="state" [label]="'State'"></app-text-input>
+    <app-text-input formControlName="city" [label]="'City'"></app-text-input>
+    <app-text-input formControlName="street" [label]="'Street'"></app-text-input>
+    <app-text-input formControlName="houseNumber" [label]="'House Number'"></app-text-input>
+    <app-text-input formControlName="zipCode" [label]="'Zip Code/Postal Code'"></app-text-input>
+    
+    <div class="d-flex">
+      <button class="w-100 btn btn-lg btn-primary mr-1" style="padding-right: 30px;" (click)="moveStep(-1)" type="button">&larr; Previous</button>
+      <button [disabled]="addressForm.invalid || registerForm.invalid"
+      class="w-100 btn btn-lg btn-primary" type="submit" >Register</button>
+    </div>
+  </form>
+</div>

@@ -1,9 +1,10 @@
 <div class="form-group">
   <input 
-  class="form-control color-exclude"
-  [class.is-invalid]="ngControl.touched && ngControl.invalid"
-  type={{type}} 
-  [formControl]="ngControl.control" 
-  placeholder={{label}}>
-  <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">Please enter a {{label}}</div>
+    class="form-control"
+    [class.is-invalid]="ngControl.touched && ngControl.invalid"
+    type={{type}} 
+    [formControl]="ngControl.control" 
+    placeholder={{label}}
+    (keypress)="inputOption($event)">
+  <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">Please fill the {{label}} field</div>
 </div>

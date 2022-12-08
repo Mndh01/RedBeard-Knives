@@ -7,6 +7,7 @@ using API.Models;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using API.Helpers;
 
 namespace API.Data
 {
@@ -25,6 +26,11 @@ namespace API.Data
             return await _context.Products
             .Include(p => p.Photos)
             .FirstOrDefaultAsync(product => product.Id == id);
+        }
+        public async Task<Product> CheckProductExistsByName(string name)
+        {
+            return await _context.Products
+            .FirstOrDefaultAsync(product => product.Name == name);
         }
 
         public async Task<IEnumerable<Product>> GetProductsAsync(string category, int price, int inStock, int soldItems) 
@@ -74,7 +80,7 @@ namespace API.Data
             return false;
         }
 
-        public async Task<IEnumerable<ItemDto>> GetItemsAsync(string category, int price, int inStock, int soldItems)
+        public async Task<PagedList<ItemDto>> GetItemsAsync(string category, int price, int inStock, int soldItems)
         {
             var result = await _context.Products
                 .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
@@ -102,10 +108,19 @@ namespace API.Data
                 .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
         }
+        
+        public async Task<ItemDto> GetItemByNameAsync(string name)
+        {
+            return await _context.Products
+            .Where(product => product.Name == name)
+            .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
+            .SingleOrDefaultAsync();
+        }
 
         public void Update(Product product)
         {
             _context.Entry(product).State = EntityState.Modified;
         }
+
     }
 }

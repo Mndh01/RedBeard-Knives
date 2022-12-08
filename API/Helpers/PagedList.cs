@@ -13,7 +13,7 @@ namespace API.Helpers
             CurrentPage = PageNumber;
             TotalPages = (int) Math.Ceiling(count / (double) pageSize);
             PageSize = pageSize;
-            TotalCount = Count;
+            TotalCount = count;
             AddRange(items);
         }
 

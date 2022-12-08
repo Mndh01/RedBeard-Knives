@@ -26,6 +26,5 @@ namespace API.Helpers
                 .ForMember(dest => dest.Addresses,opt => opt.MapFrom(src => src.UserAddresses.Select(ua => ua.Address)))
                 .ForMember(dest => dest.Age, opt => opt.MapFrom(src => DateTime.Now.Year - src.DateOfBirth.Year));
         }
-        
     }
 }

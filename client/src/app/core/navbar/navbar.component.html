@@ -1,0 +1,73 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand">RedBeard</a>
+      <button class="d-none navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="z-index-3 collapse navbar-collapse flex-row " id="navbarNavDropdown">
+        <ul class="navbar-nav col-lg-3">
+          <li class="nav-item">
+            <a class="nav-link active" routerLink="/home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/shop">Shop</a>
+          </li>
+          <!-- TODO: Show only to admin -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin" routerLinkActive="router-link-active">Dashboard</a>
+          </li>
+          
+        </ul>
+        <div class="search-bar my-auto col-lg-6">
+          <input class="text-input" type="text" name="search" id="#search-bar" placeholder="Search">
+          <span>
+            <input class="search-submit" type="submit" placeholder="search" value="">
+            <i class="fa fa-search"></i>
+          </span>
+        </div>
+        <ul class="d-none d-lg-flex navbar-nav col-lg-1">
+          <li class="nav-item dropdown" dropdown>
+            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" dropdownToggle>
+              <i class="fa fa-user-circle-o fa-2x"></i>
+            </a>
+            <ul class="user-dropdown dropdown-menu">
+              <ng-container *ngIf="(currentUser$ | async) === null">
+                <li><a class="dropdown-item" routerLink="register">Register</a></li>
+                <li><a class="dropdown-item" routerLink="login">Login</a></li>
+              </ng-container>
+              <ng-container *ngIf="currentUser$ | async">
+                <li><a class="dropdown-item" (click)="logout()">Logout {{(currentUser$ | async).name}}</a></li>
+              </ng-container>
+            </ul>
+          </li>
+          <li class="nav-item">
+          <a class="nav-link position-relative" routerLink="/basket" >
+              <i class="fa fa-shopping-cart fa-2x mr-5 text-dark"></i>
+              <div *ngIf="(basket$ | async) as basket" class="cart-no">{{basket.items.length}}</div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- Nav search for small screens -->
+      <div class="d-lg-none search-bar my-auto col-4">
+        <input class="text-input" type="text" name="search" id="#search-bar" placeholder="Search">
+        <span>
+          <input class="search-submit" type="submit" placeholder="search" value="">
+          <i class="fa fa-search"></i>
+        </span>
+      </div>
+
+    </div>
+  </nav>
+
+  <nav class="d-lg-none">
+    <div class="container-fluid bottom-nav">
+      <ul class="mobile-nav-list list-group">
+        <li class="mobile-nav-link list-group-item" routerLink="/home"><i class="fa fa-home"></i></li>
+        <li class="mobile-nav-link list-group-item" routerLink="/admin"><i class="fa fa-dashboard"></i></li>
+        <li class="mobile-nav-link list-group-item" routerLink="/shop"><i class="fa fa-shopping-basket"></i></li>
+        <li class="mobile-nav-link list-group-item" routerLink="/basket"><i class="fa fa-shopping-cart"></i></li>
+        <li class="mobile-nav-link list-group-item" routerLink="/"><i class="fa fa-user-circle"></i></li>
+      </ul>
+    </div>
+  </nav>

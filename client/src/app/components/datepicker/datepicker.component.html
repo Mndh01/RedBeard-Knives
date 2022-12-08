@@ -1,0 +1,15 @@
+<div class="date-wrapper">
+    <input 
+    readonly ngbDatepicker
+    
+    [(ngModel)]="model" 
+    #d="ngbDatepicker" 
+    placeholder="Date of birth" 
+    (click)="!completed && d.toggle(); 
+    $event.stopPropagation()"
+    (document:click)="closeFix($event, d)"
+    [minDate]="{year: 1920, month: 1, day: 1}"
+    [maxDate]="selectToday()"
+    >
+    <i class="fa fa-calendar"></i>
+</div>

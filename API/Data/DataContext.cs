@@ -48,11 +48,6 @@ namespace API.Data
 
             builder.Entity<UserAddresses>()
                 .HasKey(k => new {k.AddressId, k.UserId});
-
-            // builder.Entity<AppUser>()
-            //     .HasOne(u => u.Photo)
-            //     .WithOne<AppUser>();
-
         }
     }
 }

@@ -1,20 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
-import { Product } from 'src/app/models/Product';
+import { BasketService } from 'src/app/basket/basket.service';
+import { Product } from 'src/app/shared/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({
   selector: 'app-product-details',
   templateUrl: './product-details.component.html',
-  styleUrls: ['./product-details.component.css']
+  styleUrls: ['./product-details.component.scss']
 })
 export class ProductDetailsComponent implements OnInit {
   product: Product;
+  quantity: number = 1;
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
 
-  constructor(private productService: ProductsService, private route: ActivatedRoute) { }
+  constructor(private productService: ProductsService, private route: ActivatedRoute, private basketService: BasketService) { }
 
   ngOnInit(): void {
     this.loadProduct();
@@ -41,6 +43,21 @@ export class ProductDetailsComponent implements OnInit {
       })
     }
     return imageUrls;
+  }
+
+  addToBasket() {
+    if (this.quantity <= 0) {
+      this.quantity = 1;
+    }
+    this.basketService.addItemToBasket(this.product, this.quantity);
+  }
+
+  incrementQuantity() {
+    this.quantity++;
+  }
+  
+  decrementQuantity() {
+    this.quantity--;
   }
 
   loadProduct() { 

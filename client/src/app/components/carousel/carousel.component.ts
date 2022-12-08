@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { CarouselConfig } from 'ngx-bootstrap/carousel';
 
 @Component({
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
-  styleUrls: ['./carousel.component.css']
+  styleUrls: ['./carousel.component.scss']
 })
 
-export class CarouselComponent {
+export class CarouselComponent implements AfterViewInit {
   slides: { image: string; text?: string }[] = [];
   activeSlideIndex = 0;
  
@@ -15,6 +15,12 @@ export class CarouselComponent {
     for (let i = 0; i < 4; i++) {
       this.addSlide();
     }
+    this.setCarouselInterval(5000000);
+    this.carouselConfig.itemsPerSlide = 3;
+  }
+  
+  ngAfterViewInit(): void {
+    // console.log(this.carouselConfig);
   }
   
   addSlide(): void {

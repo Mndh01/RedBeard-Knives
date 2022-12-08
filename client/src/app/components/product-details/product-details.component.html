@@ -1,24 +1,28 @@
 <div class="container">
     <div class="row" *ngIf="product">
         <div class="col-4">
+            <h1 class="mb-2 text-center">{{product.name | titlecase}}</h1>
             <div class="card">
                 <img src="{{product.photoUrl || '../../../assets/Old-site/images/rb_logo_metal_print.png'}}" alt="{{product.category}}" class="card-img-top img-thumbnail">
-                <div class="card-body">
-                    <div>
-                        <strong>Category: </strong>
-                        <p>{{product.category}}</p>
+                <div class="row card-body">
+                    <div class="col-6">
+                        <p><strong>Category: </strong>{{product.category}}</p>
                     </div>
-                    <div>
-                        <strong>Price: </strong>
-                        <p>{{product.price}}</p>
+                    <div class="col-6">
+                        <p><strong>Price: </strong>{{product.price}}</p>
                     </div>
-                    <div>
-                        <strong>In stock: </strong>
-                        <p>{{product.inStock}}</p>
+                    <div class="col-6">
+                        <p><strong>In stock: </strong>{{product.inStock}}</p>
                     </div>
+                    <div class="col-6">           
+                        <p><strong>Sold: </strong>{{product.soldItems}}</p>
+                    </div>
+                </div>
+                <div class="addToBasket">
+                    <button (click)="addToBasket()">Add to basket</button>
                     <div>
-                        <strong>Sold: </strong>
-                        <p>{{product.soldItems}}</p>
+                        <strong class="color-exclude">Quantity: </strong>
+                        <input [(ngModel)]="quantity" type="number" min="1" max="10">
                     </div>
                 </div>
                 <div class="card-footer">
@@ -33,7 +37,7 @@
             <tabset class="product-tabset">
                 <tab heading="About">
                     <h4>Description:</h4>
-                    <p>{{product.category}}</p>
+                    <p>{{product.description}}</p>
                 </tab>
                 <tab heading="Photos">
                     <ngx-gallery [options]="galleryOptions" [images]="galleryImages" 

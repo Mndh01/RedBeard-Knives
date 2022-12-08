@@ -40,8 +40,9 @@ namespace API.Controllers
             if(await UserExists(registerDto.Email)) return BadRequest("E-mail is already in use.");
 
             registerDto.Address.IsCurrent = true;
+            registerDto.Username = registerDto.FirstName + "_" + registerDto.SureName;
 
-            registerDto.Address.AddressParts = registerDto.Address.AddressParts.ToLower();
+            LowerAddressAndConc(registerDto.Address);
             
             var user = _mapper.Map<AppUser>(registerDto);
 
@@ -102,12 +103,12 @@ namespace API.Controllers
 
             if(user == null) return Unauthorized("Invalid Email..");
 
-            var address = user.UserAddresses.Select(ua => ua.Address).SingleOrDefault(a => a.IsCurrent);
+            var address = user.UserAddresses.Select(ua => ua.Address).SingleOrDefault(a => a.IsCurrent == true);
 
             var result = await _signInManager
                 .CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (!result.Succeeded) return Unauthorized();
+            if (!result.Succeeded) return Unauthorized("Wrong password..");
 
             var addressToAssign = new AddressDto{};
 
@@ -122,6 +123,12 @@ namespace API.Controllers
                 Gender = user.Gender,
                 Address = addressToAssign
             };
+        }
+        
+        [HttpGet("email-exists")]
+        private async Task<ActionResult<bool>> EmailExists([FromQuery] string email)
+        {
+            return await _userManager.FindByEmailAsync(email) != null;
         }
 
         [Authorize]
@@ -152,5 +159,29 @@ namespace API.Controllers
         {
             return await _userManager.Users.AnyAsync(x => x.Email == Email);
         }
+
+        private void LowerAddressAndConc(Address address)
+        {
+            var properties = from p in typeof(Address).GetProperties()
+                         where p.PropertyType == typeof(string) &&
+                               p.CanRead &&
+                               p.CanWrite &&
+                               p.Name != "AddressParts"
+                         select p;
+        
+            foreach (var property in properties)
+            {
+                var value = (string)property.GetValue(address, null);
+                if (value != null)
+                {   
+                    value = value.ToLower();
+                    property.SetValue(address, value, null);
+                    address.AddressParts += value + " ";
+                }
+            }
+        }
+
+        // private void ToTitle
+
     }
 }

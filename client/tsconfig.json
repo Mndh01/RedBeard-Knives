@@ -20,6 +20,9 @@
     "types": [
       "jquery"
     ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "target": "es2017",
     "module": "es2020",
     "lib": [

@@ -1,15 +1,15 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
-import { Photo } from 'src/app/models/Photo';
-import { Product } from 'src/app/models/Product';
+import { Photo } from 'src/app/shared/models/Photo';
+import { Product } from 'src/app/shared/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-photo-editor',
   templateUrl: './photo-editor.component.html',
-  styleUrls: ['./photo-editor.component.css']
+  styleUrls: ['./photo-editor.component.scss']
 })
 export class PhotoEditorComponent implements OnInit {
   baseUrl = environment.apiUrl;
