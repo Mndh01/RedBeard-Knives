@@ -43,7 +43,7 @@
 <div class="container-fluid">
 
   <div class="row">
-    <section class="d-none d-sm-block col-sm-3 ">
+    <section class="d-none d-sm-block col-sm-3 col-xl-2">
         <h5 class="text-warning ml-3">Sort</h5>
         <select class="custom-select mb-2">
             <option selected>Alphabetical</option>
@@ -68,7 +68,7 @@
             </ul>
     </section>
         
-        <section class="col-12 col-sm-9">
+        <section class="col-12 col-sm-9 col-xl-10">
             <ng-container class="row">
                 <div class="d-flex flex-wrap justify-content-between align-items-center pb-2">
                     <div class="d-flex mr-0 align-items-center">
@@ -77,16 +77,36 @@
                         <button class="btn btn-outline-success ml-2 mb-2">Reset</button>
                     </div>
                     <header>
-                        <span><strong>10</strong> / <strong>16</strong> Results:</span>
+                        <span *ngIf="pagination"><strong>{{(pagination.currentPage * pagination.itemsPerPage) <= pagination.totalItems ? pagination.currentPage * pagination.itemsPerPage 
+                            : pagination.totalItems}}</strong> / <strong>{{pagination.totalItems}}</strong> Results</span>
                     </header>
                 </div>
                 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xxl-5 g-3" >
                     <div class="col" *ngFor="let product of products">
                         <app-product-item [product]="product"></app-product-item>
                     </div>
                 </div>
             </ng-container>
+            <div class="d-flex justify-content-center my-3">
+                <div class="row">
+                    <div class="col-xs-12 col-12">
+                        <pagination *ngIf="pagination"
+                        [boundaryLinks]="true" 
+                        [totalItems]="pagination.totalItems" 
+                        [itemsPerPage]="pagination.itemsPerPage"
+                        [rotate]="rotate" 
+                        [maxSize]="maxSize"
+                        [(ngModel)]="pagination.currentPage"
+                        (pageChanged)="pageChanged($event)"
+                        previousText="&lsaquo;"
+                        nextText="&rsaquo;" 
+                        firstText="&laquo;" 
+                        lastText="&raquo;">
+                        </pagination>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 </div>

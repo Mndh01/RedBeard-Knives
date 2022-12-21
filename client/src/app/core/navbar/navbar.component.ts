@@ -1,8 +1,8 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BasketService } from 'src/app/basket/basket.service';
-import { IBasket } from 'src/app/shared/models/Basket';
-import { User } from 'src/app/shared/models/User';
+import { IBasket } from 'src/app/models/Basket';
+import { User } from 'src/app/models/User';
 import { AccountService } from 'src/app/services/account.service';
 
 @Component({

@@ -17,22 +17,26 @@ namespace API
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            using var scope = host.Services.CreateScope();
-            var services = scope.ServiceProvider;
-            try
+            using (var scope = host.Services.CreateScope())
             {
-                var context = services.GetRequiredService<DataContext>();
-                var config = services.GetRequiredService<IConfiguration>();
-                var userManager = services.GetRequiredService<UserManager<AppUser>>();
-                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
-                await context.Database.MigrateAsync();
-                await Seed.SeedThings(userManager, roleManager, context, config);
+                var services = scope.ServiceProvider;
+                var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                try
+                {
+                    var context = services.GetRequiredService<DataContext>();
+                    var config = services.GetRequiredService<IConfiguration>();
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+                    await context.Database.MigrateAsync();
+                    await Seed.SeedThings(userManager, roleManager, context, config);
+                }
+                catch (Exception ex)
+                {
+                    var logger = loggerFactory.CreateLogger<Program>();
+                    logger.LogError(ex, "An error occured during migration");
+                }
             }
-            catch (Exception ex)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occured during migration");
-            }
+
             host.Run();
         }
 

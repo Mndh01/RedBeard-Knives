@@ -14,7 +14,7 @@
           </li>
           <!-- TODO: Show only to admin -->
           <li class="nav-item">
-            <a class="nav-link" routerLink="/admin" routerLinkActive="router-link-active">Dashboard</a>
+            <a class="nav-link" routerLink="/admin">Dashboard</a>
           </li>
           
         </ul>
@@ -36,7 +36,7 @@
                 <li><a class="dropdown-item" routerLink="login">Login</a></li>
               </ng-container>
               <ng-container *ngIf="currentUser$ | async">
-                <li><a class="dropdown-item" (click)="logout()">Logout {{(currentUser$ | async).name}}</a></li>
+                <li><a class="dropdown-item" (click)="logout()">Logout {{(currentUser$ | async).firstName}}</a></li>
               </ng-container>
             </ul>
           </li>
@@ -61,7 +61,6 @@
   </nav>
 
   <nav class="d-lg-none">
-    <div class="container-fluid bottom-nav">
       <ul class="mobile-nav-list list-group">
         <li class="mobile-nav-link list-group-item" routerLink="/home"><i class="fa fa-home"></i></li>
         <li class="mobile-nav-link list-group-item" routerLink="/admin"><i class="fa fa-dashboard"></i></li>
@@ -69,5 +68,4 @@
         <li class="mobile-nav-link list-group-item" routerLink="/basket"><i class="fa fa-shopping-cart"></i></li>
         <li class="mobile-nav-link list-group-item" routerLink="/"><i class="fa fa-user-circle"></i></li>
       </ul>
-    </div>
   </nav>

@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CarouselConfig } from 'ngx-bootstrap/carousel';
-import { Product } from 'src/app/shared/models/Product';
+import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 import { OwlOptions } from 'ngx-owl-carousel-o';
 import { Subscription, timer } from 'rxjs';
@@ -70,7 +70,7 @@ export class NewProductsComponent implements OnInit, AfterViewInit  {
   
   getProducts(): void {
     this.productService.getProducts().subscribe(data => {
-      this.products = data;
+      this.products = data.result;
       //ToLearn: why is the method below not running when we subscribe to the observable?
       // this.addSlides();
     });

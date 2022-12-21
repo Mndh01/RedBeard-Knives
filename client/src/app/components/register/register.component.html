@@ -3,7 +3,7 @@
     
     <h1 class="h3 mb-3 fw-normal">Account information: </h1>
     <div class="registerNameWrapper row">
-      <select class="col-2 color-exclude" formControlName="gender" [label]="'Gender'" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'black'}">
+      <select class="col-2 color-exclude" formControlName="gender" label="Gender" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'black'}">
         <option value="" selected disabled hidden>Title</option>
         <option value="Male" >Mr.</option>
         <option value="Female">Ms.</option>

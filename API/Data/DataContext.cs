@@ -2,6 +2,7 @@ using API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 
 namespace API.Data
@@ -15,6 +16,7 @@ namespace API.Data
         }
         
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<UserAddresses> UserAddresses { get; set; }
 
@@ -22,27 +24,29 @@ namespace API.Data
         {
             base.OnModelCreating(builder);
 
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
             builder.Entity<AppUser>()
-                .HasMany(ur => ur.UserRoles)
-                .WithOne(u => u.User)
-                .HasForeignKey(ur => ur.UserId)
+                .HasMany(u => u.UserRoles)
+                .WithOne(ur => ur.User)
+                .HasForeignKey(u => u.UserId)
                 .IsRequired();
         
             builder.Entity<AppRole>()
-                .HasMany(ur => ur.UserRoles)
-                .WithOne(u => u.Role)
+                .HasMany(r => r.UserRoles)
+                .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
             
             builder.Entity<AppUser>()
-                .HasMany(ua => ua.UserAddresses)
-                .WithOne(u => u.User)
+                .HasMany(u => u.UserAddresses)
+                .WithOne(ua => ua.User)
                 .HasForeignKey(ua => ua.UserId)
                 .IsRequired();
 
             builder.Entity<Address>()
-                .HasMany(ua => ua.UserAddresses)
-                .WithOne(a => a.Address)
+                .HasMany(a => a.UserAddresses)
+                .WithOne(ua => ua.Address)
                 .HasForeignKey(ua => ua.AddressId)
                 .IsRequired();
 

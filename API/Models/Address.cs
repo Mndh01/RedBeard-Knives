@@ -2,9 +2,8 @@ using System.Collections.Generic;
 
 namespace API.Models
 {
-    public class Address
+    public class Address : BaseEntity
     {
-        public int Id { get; set; }
         public string Country { get; set; }
         public string State { get; set; }
         public string City { get; set; }

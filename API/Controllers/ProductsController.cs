@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data.Specifications;
 using API.DTOs;
+using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using API.Models;
 using AutoMapper;
@@ -12,37 +15,81 @@ namespace API.Controllers
 {
     public class ProductsController : BaseApiController
     {
+        private readonly IGenericRepository<Product> _genProductRepo;
+        private readonly IGenericRepository<ProductCategory> _genCategoryRepo;
         private readonly IProductRepository _productRepository;
         private readonly IPhotoService _photoService;
         private readonly IMapper _mapper;
-        public ProductsController (IProductRepository productRepository, IPhotoService photoService, IMapper mapper) 
+        public ProductsController (IGenericRepository<Product> genProductRepo, IGenericRepository<ProductCategory> genCategoryRepo
+            ,IProductRepository productRepository, IPhotoService photoService, IMapper mapper) 
         {
             _mapper = mapper;
             _photoService = photoService;
             _productRepository = productRepository;
+            _genProductRepo = genProductRepo;
+            _genCategoryRepo = genCategoryRepo;
         }
         
         [HttpGet("{id}", Name = "GetProduct")]
-        public async Task<ActionResult<Product>> GetProductById(int id) 
+        public async Task<ActionResult<Product>> GetProductById(int id)
         {   
-            var product = await _productRepository.GetItemAsync(id);
+            var spec = new ProductsWithTypesSpecification(id);
+
+            var product = await _genProductRepo.GetEntityWithSpec(spec);
 
             if (product != null)
             {
                 return Ok(product);
             }
+
             return BadRequest("Couldn't find product...");
+
+            // Normal Repository Implementation below
+            // var product = await _productRepository.GetItemAsync(id);
+
+            // if (product != null)
+            // {
+            //     return Ok(product);
+            // }
+            // return BadRequest("Couldn't find product...");
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string category="", int price=-1, int inStock=-1, int soldItems=-1) 
+        public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams, string category="", int price=-1, int inStock=-1, int soldItems=-1) 
         {
-            var products = await _productRepository.GetItemsAsync(category, price, inStock, soldItems);
+            var spec = new ProductsWithTypesSpecification();
 
-            if (products != null) 
+            var products = await _genProductRepo.ListAsync(spec);
+
+            if (products != null)
+            {
                 return Ok(products);
+            }
+
+            return BadRequest("Couldn't find any products...");
+
+            // Using normal repository below
+            // var products = await _productRepository.GetItemsAsync(productParams, category, price, inStock, soldItems);
+
+            // if (products != null) {
+            //     Response.AddPaginationHeader(new PaginationHeader(products.CurrentPage, 
+            //     products.PageSize, products.TotalCount, products.TotalPages));
+
+            //     return Ok(value: products);
+            // }
             
-            return BadRequest("Couldn't find products with such properties...");
+            
+            // return BadRequest("Couldn't find products with such properties...");
+        }
+
+        [HttpGet("categories")]
+        public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategories() 
+        {
+            var categories = await _genCategoryRepo.ListAllAsync();
+
+            if (categories != null) return Ok(categories);
+
+            return BadRequest("Couldn't find categories...");
         }
 
         [HttpPost("add-product")]
@@ -54,7 +101,7 @@ namespace API.Controllers
             
             if (await _productRepository.CheckProductExistsByName(newProduct.Name) != null) return BadRequest("Name already exists for another product..");
 
-            newProduct.Category = newProduct.Category.ToLower();
+            newProduct.Category.Name = newProduct.Category.Name.ToLower();
                         
             if(await _productRepository.AddProductAsync(newProduct))
                 return Ok(newProduct);

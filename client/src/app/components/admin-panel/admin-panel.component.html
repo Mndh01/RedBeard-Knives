@@ -22,12 +22,12 @@
                         formControlName="soldItems" 
                         placeholder="How many sold"> -->
                 
-                <app-text-input [formControl]="addProductForm.controls['name']" [label]="'Product Name'"></app-text-input>
-                <app-text-input [formControl]="addProductForm.controls['category']" [label]="'Category'"></app-text-input>
-                <app-text-input [formControl]="addProductForm.controls['price']" [label]="'Price'" type="number"></app-text-input>
-                <app-text-input [formControl]="addProductForm.controls['description']" [label]="'Description'"></app-text-input>
-                <app-text-input [formControl]="addProductForm.controls['inStock']" [label]="'In Stock'" type="number"></app-text-input>
-                <app-text-input [formControl]="addProductForm.controls['soldItems']" [label]="'Sold items count'" type="number"></app-text-input>
+                <app-text-input [formControl]="getFormControl('name')" [label]="'Product Name'"></app-text-input>
+                <app-text-input [formControl]="getFormControl('category')" [label]="'Category'"></app-text-input>
+                <app-text-input [formControl]="getFormControl('price')" [label]="'Price'" type="number"></app-text-input>
+                <app-text-input [formControl]="getFormControl('description')" [label]="'Description'"></app-text-input>
+                <app-text-input [formControl]="getFormControl('inStock')" [label]="'In Stock'" type="number"></app-text-input>
+                <app-text-input [formControl]="getFormControl('soldItems')" [label]="'Sold items count'" type="number"></app-text-input>
         <div>
                 <button [disabled]="!addProductForm.valid" type="submit" class="btn btn-success my-2 my-sm-1" >Add Product</button>
         </div>

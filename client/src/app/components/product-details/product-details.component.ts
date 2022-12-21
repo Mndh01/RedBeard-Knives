@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
 import { BasketService } from 'src/app/basket/basket.service';
-import { Product } from 'src/app/shared/models/Product';
+import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({

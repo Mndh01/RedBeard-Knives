@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from 'src/app/shared/models/Product';
+import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({
@@ -24,7 +24,7 @@ export class ProductsComponent implements OnInit {
     this.checkPrice();
     this.productService.setParams(this.category, this.price, this.inStock, this.soldItems);
     this.productService.getProducts().subscribe(data => {
-      this.products = data;
+      this.products = data.result;
     }, error => {
       console.log(error);
     });

@@ -3,7 +3,7 @@
     class="form-control"
     [class.is-invalid]="ngControl.touched && ngControl.invalid"
     type={{type}} 
-    [formControl]="ngControl.control" 
+    [formControl]="ngControlControl"
     placeholder={{label}}
     (keypress)="inputOption($event)">
   <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">Please fill the {{label}} field</div>

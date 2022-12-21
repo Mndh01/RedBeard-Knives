@@ -27,6 +27,10 @@ export class AdminPanelComponent implements OnInit {
     })
   }
 
+  getFormControl(name) { 
+    return this.addProductForm.get(name) as FormControl;
+  }
+
   addProduct() {
     this.adminService.addProduct(this.addProductForm.value).subscribe(response =>{
       console.log(response);

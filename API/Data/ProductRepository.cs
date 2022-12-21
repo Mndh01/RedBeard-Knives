@@ -8,6 +8,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using API.Helpers;
+using System;
 
 namespace API.Data
 {
@@ -40,7 +41,7 @@ namespace API.Data
             .ToListAsync();
 
             if (!string.IsNullOrEmpty(category))
-                result = result.Where(p => p.Category == category).ToList();
+                result = result.Where(p => p.Category.Name == category).ToList();
 
             if (price != -1)
                 result = result.Where(p => p.Price <= price).ToList();
@@ -80,31 +81,33 @@ namespace API.Data
             return false;
         }
 
-        public async Task<PagedList<ItemDto>> GetItemsAsync(string category, int price, int inStock, int soldItems)
+        public async Task<PagedList<ItemDto>> GetItemsAsync(ProductParams productParams, string category, int price, int inStock, int soldItems)
         {
-            var result = await _context.Products
+            var query = _context.Products
+                .Include(p => p.Category)
                 .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+                .AsNoTracking();
 
             if (!string.IsNullOrEmpty(category))
-                result = result.Where(p => p.Category == category).ToList();
+                query = query.Where(p => p.Category.Name == category);
 
             if (price != -1)
-                result = result.Where(p => p.Price <= price).ToList();
+                query = query.Where(p => p.Price <= price);
 
             if (inStock != -1)
-                result = result.Where(p => p.InStock == inStock).ToList();
+                query = query.Where(p => p.InStock == inStock);
 
             if (soldItems != -1)
-                result = result.Where(p => p.SoldItems == soldItems).ToList();
+                query = query.Where(p => p.SoldItems == soldItems);
 
-            return result;
+            return await PagedList<ItemDto>.CreateAsync(query, productParams.PageNumber, productParams.PageSize);
         }
 
         public async Task<ItemDto> GetItemAsync(int id)
         {
             return await _context.Products
                 .Where(product => product.Id == id)
+                .Include(p => p.Category)
                 .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
         }
@@ -113,10 +116,16 @@ namespace API.Data
         {
             return await _context.Products
             .Where(product => product.Name == name)
+            .Include(p => p.Category)
             .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<ProductCategory>> GetCategoriesAsync()
+        {
+            return await _context.ProductCategories.ToListAsync();
+        }
+        
         public void Update(Product product)
         {
             _context.Entry(product).State = EntityState.Modified;

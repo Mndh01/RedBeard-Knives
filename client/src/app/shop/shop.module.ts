@@ -4,6 +4,7 @@ import { ShopComponent } from './shop.component';
 import { FormsModule } from '@angular/forms';
 import { ProductItemComponent } from './product-item/product-item.component';
 import { AppRoutingModule } from '../app-routing.module';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { AppRoutingModule } from '../app-routing.module';
     CommonModule,
     AppRoutingModule,
     FormsModule,
+    SharedModule,
   ],
   exports: [
     ShopComponent,

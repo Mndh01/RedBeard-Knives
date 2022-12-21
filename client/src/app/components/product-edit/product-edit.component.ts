@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Product } from 'src/app/shared/models/Product';
+import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 
 @Component({

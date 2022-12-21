@@ -1,8 +1,8 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
-import { Photo } from 'src/app/shared/models/Photo';
-import { Product } from 'src/app/shared/models/Product';
+import { Photo } from 'src/app/models/Photo';
+import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 import { environment } from 'src/environments/environment';
 
