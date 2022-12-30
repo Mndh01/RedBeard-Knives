@@ -1,0 +1,13 @@
+<pagination *ngIf="pagination"
+    [boundaryLinks]="true" 
+    [totalItems]="pagination.count" 
+    [itemsPerPage]="pagination.pageSize"
+    [rotate]="rotate" 
+    [maxSize]="maxSize"
+    [(ngModel)]="pagination.pageIndex"
+    (pageChanged)="onPagerChange($event)"
+    previousText="&lsaquo;"
+    nextText="&rsaquo;" 
+    firstText="&laquo;" 
+    lastText="&raquo;">
+</pagination>

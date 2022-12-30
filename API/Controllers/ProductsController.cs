@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using API.Data.Specifications;
 using API.DTOs;
@@ -17,15 +19,13 @@ namespace API.Controllers
     {
         private readonly IGenericRepository<Product> _genProductRepo;
         private readonly IGenericRepository<ProductCategory> _genCategoryRepo;
-        private readonly IProductRepository _productRepository;
         private readonly IPhotoService _photoService;
         private readonly IMapper _mapper;
-        public ProductsController (IGenericRepository<Product> genProductRepo, IGenericRepository<ProductCategory> genCategoryRepo
-            ,IProductRepository productRepository, IPhotoService photoService, IMapper mapper) 
+        public ProductsController (IGenericRepository<Product> genProductRepo, IPhotoService photoService,
+            IGenericRepository<ProductCategory> genCategoryRepo, IMapper mapper) 
         {
             _mapper = mapper;
             _photoService = photoService;
-            _productRepository = productRepository;
             _genProductRepo = genProductRepo;
             _genCategoryRepo = genCategoryRepo;
         }
@@ -43,27 +43,31 @@ namespace API.Controllers
             }
 
             return BadRequest("Couldn't find product...");
-
-            // Normal Repository Implementation below
-            // var product = await _productRepository.GetItemAsync(id);
-
-            // if (product != null)
-            // {
-            //     return Ok(product);
-            // }
-            // return BadRequest("Couldn't find product...");
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams, string category="", int price=-1, int inStock=-1, int soldItems=-1) 
+        public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams productParams) 
         {
-            var spec = new ProductsWithTypesSpecification();
+            List<Expression<Func<Product, bool>>> criteria = new List<Expression<Func<Product, bool>>>();
+
+            criteria.Add(p => (string.IsNullOrEmpty(productParams.Search) || p.Name.ToLower().Contains(productParams.Search)));
+            criteria.Add(p => (!productParams.CategoryId.HasValue || p.CategoryId == productParams.CategoryId));
+            criteria.Add(p => (!productParams.Price.HasValue || p.Price <= productParams.Price));
+            criteria.Add(p => (!productParams.InStock || p.InStock > 0));
+             
+            var spec = new ProductsWithTypesSpecification(productParams, criteria);
+
+            var countSpec = new ProductWithFiltersForCountSpecification(productParams);
+
+            var totalItems = await _genProductRepo.CountAsync(countSpec);
 
             var products = await _genProductRepo.ListAsync(spec);
 
-            if (products != null)
-            {
-                return Ok(products);
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ItemDto>>(products);
+
+            if (products.Count > 0) 
+            { 
+                return Ok(new Pagination<ItemDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
             }
 
             return BadRequest("Couldn't find any products...");
@@ -91,6 +95,22 @@ namespace API.Controllers
 
             return BadRequest("Couldn't find categories...");
         }
+        
+        [HttpPost("add-category")]
+        public async Task<ActionResult<ProductCategory>> AddCategory(ProductCategory newCategory)
+        {
+            BaseSpecification<ProductCategory> spec = new BaseSpecification<ProductCategory>(pc => pc.Name == newCategory.Name.ToLower());
+            
+            var exists = await _genCategoryRepo.GetEntityWithSpec(spec);
+
+            if(exists != null) { return BadRequest("Category already exists..."); }
+            
+            var category = new ProductCategory { Name = newCategory.Name.ToLower() };
+
+            if (await _genCategoryRepo.AddAsync(category)) return Ok(category);
+
+            return BadRequest("Couldn't add category...");
+        }
 
         [HttpPost("add-product")]
         public async Task<ActionResult<Product>> AddProduct(Product product) 
@@ -98,12 +118,14 @@ namespace API.Controllers
             var newProduct  = _mapper.Map<Product>(product);
             
             newProduct.Name = newProduct.Name.ToLower();
-            
-            if (await _productRepository.CheckProductExistsByName(newProduct.Name) != null) return BadRequest("Name already exists for another product..");
 
-            newProduct.Category.Name = newProduct.Category.Name.ToLower();
+            BaseSpecification<Product> spec = new BaseSpecification<Product>(p => p.Name == product.Name.ToLower());
+
+            newProduct.Category = await _genCategoryRepo.GetByIdAsync(product.Category.Id);
+            
+            if (await _genProductRepo.GetEntityWithSpec(spec) != null) return BadRequest("Name already exists for another product..");
                         
-            if(await _productRepository.AddProductAsync(newProduct))
+            if(await _genProductRepo.AddAsync(newProduct))
                 return Ok(newProduct);
 
             return BadRequest("Failed to add product");               
@@ -113,7 +135,7 @@ namespace API.Controllers
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file, int id)
         {
             
-            var product = await _productRepository.GetProductByIdAsync(id);
+            var product = await _genProductRepo.GetByIdAsync(id);
 
             var result = await _photoService.AddPhotoAsync(file);
 
@@ -128,21 +150,26 @@ namespace API.Controllers
             if (product.Photos.Count == 0) 
             {
                 photo.IsMain = true;
-            }
+        }
 
             product.Photos.Add(photo);
 
-            if (await _productRepository.SaveAllAsync()) return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
+            if (await _genProductRepo.SaveAllAsync()) return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
 
             return BadRequest("Failed to add the photo..");
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteProduct(int id)
-        {
-            var result = _productRepository.DeleteProduct(id);
+        {   
+            var dummyProduct = new Product 
+            {
+                Id = id
+            };
 
-            if (result)
+            var success = _genProductRepo.Delete(dummyProduct);
+
+            if (success)
                 return Ok("Deleted successfully.");
             
             return BadRequest("Failed to remove product..");
@@ -151,7 +178,7 @@ namespace API.Controllers
         [HttpDelete("delete-photo")]
         public async Task<ActionResult<Product>> DeletePhoto(int ProductId, int PhotoId)
         {
-            var product = await _productRepository.GetProductByIdAsync(ProductId);
+            var product = await _genProductRepo.GetByIdAsync(ProductId);
 
             var photo = product.Photos.FirstOrDefault(Photo => Photo.Id == PhotoId);
 
@@ -166,7 +193,7 @@ namespace API.Controllers
             
             product.Photos.Remove(photo);
 
-            if (await _productRepository.SaveAllAsync()) return Ok();
+            if (await _genProductRepo.SaveAllAsync()) return Ok();
 
             return BadRequest("Failed to delete the photo..");
         }
@@ -176,15 +203,15 @@ namespace API.Controllers
         {
             productUpdateDto.Name = productUpdateDto.Name.ToLower();
 
-            productUpdateDto.Category = productUpdateDto.Category.ToLower();
+            productUpdateDto.Category.Name = productUpdateDto.Category.Name.ToLower();
             
-            var product = await _productRepository.GetProductByIdAsync(productUpdateDto.Id);
+            var product = await _genProductRepo.GetByIdAsync(productUpdateDto.Id);
 
             _mapper.Map(productUpdateDto, product);
 
-            _productRepository.Update(product);
+            _genProductRepo.Update(product);
 
-            if (await _productRepository.SaveAllAsync()) return NoContent();
+            if (await _genProductRepo.SaveAllAsync()) return NoContent();
 
             return BadRequest("Failed to update product..");
         }
@@ -192,7 +219,7 @@ namespace API.Controllers
         [HttpPut("set-main-photo")]
         public async Task<ActionResult> SetMainPhoto(int ProductId, int PhotoId)
         {
-            var product = await _productRepository.GetProductByIdAsync(ProductId);
+            var product = await _genProductRepo.GetByIdAsync(ProductId);
 
             var photo = product.Photos.FirstOrDefault(photo => photo.Id == PhotoId);
 
@@ -203,7 +230,7 @@ namespace API.Controllers
             if (currentMain != null) currentMain.IsMain = false;
             photo.IsMain = true;
 
-            if (await _productRepository.SaveAllAsync()) return NoContent();
+            if (await _genProductRepo.SaveAllAsync()) return NoContent();
 
             return BadRequest("Failed to set main photo..");
         }

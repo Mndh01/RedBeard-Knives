@@ -18,7 +18,6 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "types": [
-      "jquery"
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,

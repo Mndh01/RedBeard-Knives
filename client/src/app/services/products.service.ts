@@ -2,8 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { PaginatedResult } from '../models/Pagination';
+import { PaginatedResponse, PaginatedResult } from '../models/Pagination';
 import { Product } from '../models/Product';
+import { ProductCategory } from '../models/ProductCategory';
+import { ShopParams } from '../models/ShopParams';
 
 @Injectable({
   providedIn: 'root'
@@ -11,32 +13,38 @@ import { Product } from '../models/Product';
 export class ProductsService {
   fakeUrl = "../assets/products.json"
   baseUrl = environment.apiUrl;
-  params = new HttpParams();
   paginatedResult: PaginatedResult<Product[]> = new PaginatedResult<Product[]>();
 
   constructor(private http: HttpClient) { }
   
-  setParams(category: string = "", price:number = -1, inStock:number = -1, soldItems:number = -1) {
-    this.params = this.params.set("category", `${category}`);
-    this.params = this.params.set("price", price);
-    this.params = this.params.set("inStock", inStock);
-    this.params = this.params.set("soldItems", soldItems);
-  }
-
-  getProducts(page?:number, itemsPerPage?:number){
-    if(page && itemsPerPage) {
-      this.params = this.params.set('pageNumber', page);
-      this.params = this.params.set('pageSize', itemsPerPage);
+  getProducts(shopParams?: ShopParams){
+    let params = new HttpParams(); 
+    
+    if(shopParams?.pageIndex && shopParams?.pageSize) {
+      params = params.set('pageIndex', shopParams.pageIndex);
+      params = params.set('pageSize', shopParams.pageSize);
     }
 
-    return this.http.get<Product[]>(this.baseUrl + "products",  {observe: "response", params: this.params }).pipe(
+    if(shopParams?.categoryId){
+      params = params.set('categoryId', shopParams.categoryId);
+    }
+
+    if(shopParams?.sort){
+      params = params.set('sort', shopParams.sort);
+    }
+
+    if(shopParams?.search){
+      params = params.set('search', shopParams.search);
+    }
+    
+    return this.http.get<PaginatedResponse<Product[]>>(this.baseUrl + "products",  {observe: "response", params: params }).pipe(
       map(response => {
-        if(response.body) {
-          this.paginatedResult.result = response.body;
-        }
-        const pagination = response.headers.get('Pagination');
-        if(pagination) {
-          this.paginatedResult.pagination = JSON.parse(pagination);
+        if(response.body != null) {
+          this.paginatedResult.data = response.body.data;
+          this.paginatedResult.pagination.pageIndex = response.body.pageIndex;
+          this.paginatedResult.pagination.pageSize = response.body.pageSize;
+          this.paginatedResult.pagination.count = response.body.count;
+          this.paginatedResult.pagination.totalPages = Math.ceil(response.body.count / response.body.pageSize);
         }
         return this.paginatedResult;
       })
@@ -47,16 +55,19 @@ export class ProductsService {
     return this.http.get<Product>(this.baseUrl + "products/" + id);
   }
 
+  getCategories() {
+    return this.http.get<ProductCategory[]>(this.baseUrl + "products/categories");
+  }
+
   updateProduct(product: Product) {
     return this.http.put(this.baseUrl + 'products', product)
   }
 
-  
   deleteProduct(id: number) {
     return this.http.delete(this.baseUrl + "products/" + id)
   }
   
-  updateMainPhoto(Params:HttpParams) {
+  updateMainPhoto(Params: HttpParams) {
     return this.http.put(this.baseUrl + "products/set-main-photo", null, { params: Params });
   }
 

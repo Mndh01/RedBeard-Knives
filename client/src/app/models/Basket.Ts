@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { Category } from './Product';
 
 export interface IBasket {
     id: string,
@@ -11,8 +12,7 @@ export interface IBasketItem {
     price: number;
     quantity: number;
     photoUrl: string;
-    // brand: string;
-    type: string;
+    category: Category;
 }
 
 export class Basket implements IBasket {

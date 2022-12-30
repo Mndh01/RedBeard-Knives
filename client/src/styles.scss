@@ -1,3 +1,6 @@
+
+/* Importing Bootstrap SCSS file. */
+// @import "~bootstrap/scss/bootstrap";
 $primary-color: #E7B133;
 $secondary-color: #222;
 
@@ -23,9 +26,10 @@ input::-webkit-inner-spin-button {
 }
 
 input {
-    padding-bottom: 5px;
-    padding-left: 7px;
-    // background-color: $secondary-color !important;
+    border: none !important;
+    width: 100%;
+    background-color: #32383e;
+    outline: none;
 }
 
 .text-input {
@@ -33,10 +37,31 @@ input {
     border-radius: 5px;
     width: 100%;
     color: $primary-color;
-    background-color: $secondary-color;
-    padding-left: 5px;
+    background-color: #32383e !important;
     outline: none;
+    margin-bottom: .3rem;
 }
+
+select {
+    padding: 5px 7px;
+    border: none;
+    border-radius: 5px;
+    width: max-content;
+    color: $primary-color;
+    background-color: #32383e !important;
+    outline: none;
+    
+    ul {
+        background-color: #32383e;
+        color: $primary-color;
+    }
+
+    option {
+        color: $primary-color;
+        border-bottom: $primary-color 1px solid;
+    }
+}
+
 
 // .date-wrapper {
 //     *{
@@ -113,6 +138,7 @@ input {
     }
 }
 
-option {
-    color: grey;
+// Bootstrap classes override
+.form-control {
+    background-color: #32383e;
 }

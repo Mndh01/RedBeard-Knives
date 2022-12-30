@@ -10,9 +10,14 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { Ng2TelInputModule } from 'ng2-tel-input';
 import { RouterModule } from '@angular/router';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { PagingHeaderComponent } from './components/paging-header/paging-header.component';
+import { PagerComponent } from './components/pager/pager.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    PagingHeaderComponent,
+    PagerComponent
+  ],
   imports: [
     CommonModule,
     RouterModule,
@@ -38,6 +43,8 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     FileUploadModule,
     Ng2TelInputModule,
     PaginationModule,
+    PagingHeaderComponent,
+    PagerComponent,
   ]
 })
 export class SharedModule { }

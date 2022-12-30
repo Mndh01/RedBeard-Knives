@@ -23,8 +23,8 @@ export class ProductsComponent implements OnInit {
   getProducts() {
     this.checkPrice();
     this.productService.setParams(this.category, this.price, this.inStock, this.soldItems);
-    this.productService.getProducts().subscribe(data => {
-      this.products = data.result;
+    this.productService.getProducts().subscribe(response => {
+      this.products = response.data;
     }, error => {
       console.log(error);
     });

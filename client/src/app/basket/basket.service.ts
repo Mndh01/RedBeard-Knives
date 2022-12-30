@@ -121,7 +121,7 @@ export class BasketService {
       price: item.price,
       photoUrl: item.photoUrl,
       quantity,
-      type: item.category
+      category: item.category
     };
   }
 

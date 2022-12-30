@@ -1,0 +1,11 @@
+<header>
+    <span *ngIf="pagination && pagination.count > 0">Showing 
+        <strong>{{((pagination.pageIndex - 1) * pagination.pageSize + 1)}} - {{(pagination.pageIndex * pagination.pageSize)
+             <= pagination.count ? (pagination.pageIndex * pagination.pageSize) : pagination.count}}
+        </strong> 
+        of 
+        <strong>{{pagination.count}}</strong>
+        Results
+    </span>
+    <span *ngIf="pagination && pagination.count === 0">There are no products with current filters</span>
+</header>

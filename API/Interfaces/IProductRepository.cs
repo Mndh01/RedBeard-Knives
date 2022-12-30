@@ -12,6 +12,7 @@ namespace API.Interfaces
         Task<Product> GetProductByIdAsync(int id);
         Task<IEnumerable<Product>> GetProductsAsync(string type, int price, int inStock, int soldItems);
         Task<IEnumerable<ProductCategory>> GetCategoriesAsync();
+        Task<ProductCategory> GetCategoryByNameAsync(string name);
         Task<PagedList<ItemDto>> GetItemsAsync(ProductParams productParams, string category, int price, int inStock, int soldItems);
         Task<ItemDto> GetItemAsync(int id);
         Task<ItemDto> GetItemByNameAsync(string name);

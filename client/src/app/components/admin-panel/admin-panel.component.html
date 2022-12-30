@@ -21,17 +21,29 @@
                         type="number" 
                         formControlName="soldItems" 
                         placeholder="How many sold"> -->
-                
                 <app-text-input [formControl]="getFormControl('name')" [label]="'Product Name'"></app-text-input>
-                <app-text-input [formControl]="getFormControl('category')" [label]="'Category'"></app-text-input>
                 <app-text-input [formControl]="getFormControl('price')" [label]="'Price'" type="number"></app-text-input>
                 <app-text-input [formControl]="getFormControl('description')" [label]="'Description'"></app-text-input>
                 <app-text-input [formControl]="getFormControl('inStock')" [label]="'In Stock'" type="number"></app-text-input>
                 <app-text-input [formControl]="getFormControl('soldItems')" [label]="'Sold items count'" type="number"></app-text-input>
-        <div>
-                <button [disabled]="!addProductForm.valid" type="submit" class="btn btn-success my-2 my-sm-1" >Add Product</button>
-        </div>
+                        <Select (change)="setCategoryInForm($event.target.value)" label="Category" title="setCategory">
+                                <option value="" disabled selected class="d-none">Choose category of product</option>
+                                <option *ngFor="let category of categories" [ngValue]="category">{{category.name}}</option>
+                        </Select>
+                <div>
+                        <button [disabled]="!addProductForm.valid" type="submit" class="btn btn-success my-2 my-sm-1" >Add Product</button>
+                </div>
+                <button (click)="showFormValue()" type="button" >Show values</button>
         </form>
+
+        <div class="mt-3">
+                <input type="text" class="form-control text-input" name="categoryToAdd" [(ngModel)]="categoryToAdd" placeholder="Name of category to be added">
+                <h2>Entered value is: {{categoryToAdd}}</h2>
+                
+                <button [disabled]='categoryToAdd == "" || categoryToAdd === undefined' type="submit" 
+                class="btn btn-success my-2 my-sm-1" (click)="addCategory()">   Add category
+        </button>
+        </div>
 </div>
 <!-- For controlling the carousel -->
 <!-- <div>

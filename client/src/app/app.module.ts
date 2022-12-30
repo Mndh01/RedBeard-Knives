@@ -32,6 +32,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { CoreModule } from './core/core.module';
 import { ShopModule } from './shop/shop.module';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { ShopModule } from './shop/shop.module';
     BrowserAnimationsModule,
     NgbModule,
     CarouselModule,
+    PaginationModule.forRoot(),
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi:true},

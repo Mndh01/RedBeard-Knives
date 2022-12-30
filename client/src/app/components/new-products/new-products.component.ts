@@ -69,8 +69,8 @@ export class NewProductsComponent implements OnInit, AfterViewInit  {
   }
   
   getProducts(): void {
-    this.productService.getProducts().subscribe(data => {
-      this.products = data.result;
+    this.productService.getProducts().subscribe(response => {
+      this.products = response.data;
       //ToLearn: why is the method below not running when we subscribe to the observable?
       // this.addSlides();
     });

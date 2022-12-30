@@ -59,7 +59,7 @@ namespace API.Data
         public async Task<bool> AddProductAsync(Product product)
         {
             _context.Products.Add(product);   
-               return await SaveAllAsync();
+            return await SaveAllAsync();
         }
 
         public async Task<bool> SaveAllAsync()
@@ -89,7 +89,7 @@ namespace API.Data
                 .AsNoTracking();
 
             if (!string.IsNullOrEmpty(category))
-                query = query.Where(p => p.Category.Name == category);
+                query = query.Where(p => p.Category == category);
 
             if (price != -1)
                 query = query.Where(p => p.Price <= price);
@@ -124,6 +124,11 @@ namespace API.Data
         public async Task<IEnumerable<ProductCategory>> GetCategoriesAsync()
         {
             return await _context.ProductCategories.ToListAsync();
+        }
+        
+        public async Task<ProductCategory> GetCategoryByNameAsync(string name)
+        {
+            return await _context.ProductCategories.Where(category => category.Name == name).FirstOrDefaultAsync();
         }
         
         public void Update(Product product)
