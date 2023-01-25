@@ -10,6 +10,7 @@ import { ShopParams } from '../models/ShopParams';
   templateUrl: './shop.component.html',
   styleUrls: ['./shop.component.scss']
 })
+
 export class ShopComponent implements OnInit {
   @ViewChild('search', {static: true}) searchTerm: ElementRef<HTMLInputElement>;
   @ViewChild('sortSelect', {static: true}) SortSelect: ElementRef<HTMLSelectElement>;
@@ -22,17 +23,18 @@ export class ShopComponent implements OnInit {
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to High', value: 'priceAsc' },
     { name: 'Price: High to Low', value: 'priceDesc' },
+    { name: 'Top selling', value: 'topSells' },
   ];
   
   constructor(private productService: ProductsService) { }
 
   ngOnInit() {
+    this.setPageSize();
     this.getProducts();
     this.getCategories();
   }
 
   getProducts() {
-    this.checkPrice();
     this.productService.getProducts(this.shopParams).subscribe({
       next: (response: PaginatedResult<Product[]>) => {
         if(response.data && response.pagination) {
@@ -50,14 +52,6 @@ export class ShopComponent implements OnInit {
       console.log(error); // TODO: Change this log to a toastr popup
     })      
   }
-  
-  checkPrice() {
-    if (this.inputPrice > 0 && this.inputPrice < Number.POSITIVE_INFINITY){
-      this.shopParams.price = this.inputPrice;
-    }else{
-      this.shopParams.price = undefined;
-    }
-  }
 
   onPageChanged(event: any) {
     if (this.shopParams.pageIndex !== event){
@@ -68,9 +62,11 @@ export class ShopComponent implements OnInit {
   }
 
   onCategorySelect(categoryId: number) {
-    this.shopParams.categoryId = categoryId;
-    this.shopParams.pageIndex = 1;
-    this.getProducts(); 
+    if (this.shopParams.categoryId !== categoryId) {
+      this.shopParams.categoryId = categoryId;
+      this.shopParams.pageIndex = 1;
+      this.getProducts(); 
+    }
   }
 
   onSortSelect(sort: string) {
@@ -87,6 +83,29 @@ export class ShopComponent implements OnInit {
     this.searchTerm.nativeElement.value = '';
     this.SortSelect.nativeElement.value = 'name';
     this.shopParams = new ShopParams();
+    this.setPageSize();
     this.getProducts();
+  }
+
+  private setPageSize() {
+    let width: number = window.innerWidth;
+    switch(true) 
+    {
+      case (width >= 575 && width <= 767):
+          this.shopParams.pageSize = 6;
+          break;
+      case (width >= 768 && width <= 991):
+          this.shopParams.pageSize = 9;
+          break;
+      case (width >= 992 && width <= 1399):
+          this.shopParams.pageSize = 12;
+          break;
+      case (width >= 1400):
+          this.shopParams.pageSize = 15;
+          break;
+      default:
+        this.shopParams.pageSize = 5;
+        break;
+    }
   }
 }

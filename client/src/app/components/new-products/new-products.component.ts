@@ -3,7 +3,7 @@ import { CarouselConfig } from 'ngx-bootstrap/carousel';
 import { Product } from 'src/app/models/Product';
 import { ProductsService } from 'src/app/services/products.service';
 import { OwlOptions } from 'ngx-owl-carousel-o';
-import { Subscription, timer } from 'rxjs';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-new-products',
@@ -23,7 +23,7 @@ export class NewProductsComponent implements OnInit, AfterViewInit  {
   counter: number = 0;
   timer = timer(0, this.interval);
   
-  @HostListener('window:resize', ['$event'])  resizeImage() {
+  @HostListener('window:resize', ['$event']) resizeImage() {
     this.windowWidth = window.innerWidth;
   }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using API.DTOs;
 using API.Models;
+using API.Models.OrderAggregate;
 using AutoMapper;
 using AutoMapper.Internal;
 
@@ -16,10 +17,21 @@ namespace API.Helpers
             CreateMap<Product, ItemDto>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src =>
                     src.Photos.FirstOrDefault(x => x.IsMain).Url));
+            CreateMap<Product, ProductUpdateDto>();
             CreateMap<Photo, PhotoDto>();
-            CreateMap<ProductUpdateDto, Product>();
+            
+            CreateMap<Models.Address, AddressDto>().ReverseMap();
+            CreateMap<AddressDto, Models.OrderAggregate.Address>();
+            
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ItemOrdered.ProductItemId))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ItemOrdered.ProductName))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.ItemOrdered.PictureUrl));
+            CreateMap<Order, OrderToReturnDto>()
+                .ForMember(dest => dest.DeliveryMethod, opt => opt.MapFrom(src => src.DeliveryMethod.ShortName))
+                .ForMember(dest => dest.ShippingPrice, opt => opt.MapFrom(src => src.DeliveryMethod.Price));
+            
             CreateMap<RegisterDto, AppUser>();
-            CreateMap<AddressDto, Address>().ReverseMap();
             CreateMap<AppUser, MemberDto>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url))
                 .ForMember(dest => dest.Addresses,opt => opt.MapFrom(src => src.UserAddresses.Select(ua => ua.Address)))

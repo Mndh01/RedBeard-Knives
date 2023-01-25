@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account.service';
@@ -10,6 +10,7 @@ import { AccountService } from 'src/app/services/account.service';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  @Output() success: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private accountService: AccountService, private router: Router) { }
 
@@ -26,11 +27,11 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     this.accountService.login(this.loginForm.value).subscribe(() => {
-      console.log('user logged in');
       this.router.navigateByUrl('/');
-
+      this.success.emit(true);
     }, error => {
       console.log(error);
+      this.success.emit(false);
       this.loginForm.get('password').reset();
     });
   }

@@ -17,17 +17,14 @@ namespace API.Controllers
 {
     public class ProductsController : BaseApiController
     {
-        private readonly IGenericRepository<Product> _genProductRepo;
-        private readonly IGenericRepository<ProductCategory> _genCategoryRepo;
         private readonly IPhotoService _photoService;
         private readonly IMapper _mapper;
-        public ProductsController (IGenericRepository<Product> genProductRepo, IPhotoService photoService,
-            IGenericRepository<ProductCategory> genCategoryRepo, IMapper mapper) 
+        private readonly IUnitOfWork _unitOfWork;
+        public ProductsController (IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper) 
         {
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _photoService = photoService;
-            _genProductRepo = genProductRepo;
-            _genCategoryRepo = genCategoryRepo;
         }
         
         [HttpGet("{id}", Name = "GetProduct")]
@@ -35,7 +32,7 @@ namespace API.Controllers
         {   
             var spec = new ProductsWithTypesSpecification(id);
 
-            var product = await _genProductRepo.GetEntityWithSpec(spec);
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
 
             if (product != null)
             {
@@ -59,9 +56,9 @@ namespace API.Controllers
 
             var countSpec = new ProductWithFiltersForCountSpecification(productParams);
 
-            var totalItems = await _genProductRepo.CountAsync(countSpec);
+            var totalItems = await _unitOfWork.Repository<Product>().CountAsync(countSpec);
 
-            var products = await _genProductRepo.ListAsync(spec);
+            var products = await _unitOfWork.Repository<Product>().ListAsync(spec);
 
             var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ItemDto>>(products);
 
@@ -89,29 +86,33 @@ namespace API.Controllers
         [HttpGet("categories")]
         public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategories() 
         {
-            var categories = await _genCategoryRepo.ListAllAsync();
+            var categories = await _unitOfWork.Repository<ProductCategory>().ListAllAsync();
 
             if (categories != null) return Ok(categories);
 
             return BadRequest("Couldn't find categories...");
         }
         
+        // Set authorization only for admin
         [HttpPost("add-category")]
         public async Task<ActionResult<ProductCategory>> AddCategory(ProductCategory newCategory)
         {
             BaseSpecification<ProductCategory> spec = new BaseSpecification<ProductCategory>(pc => pc.Name == newCategory.Name.ToLower());
             
-            var exists = await _genCategoryRepo.GetEntityWithSpec(spec);
+            var exists = await _unitOfWork.Repository<ProductCategory>().GetEntityWithSpec(spec);
 
             if(exists != null) { return BadRequest("Category already exists..."); }
             
             var category = new ProductCategory { Name = newCategory.Name.ToLower() };
 
-            if (await _genCategoryRepo.AddAsync(category)) return Ok(category);
+            _unitOfWork.Repository<ProductCategory>().Add(category);
+
+            if (await _unitOfWork.Complete() > 0) return Ok(category);
 
             return BadRequest("Couldn't add category...");
         }
 
+        // Set authorization only for admin
         [HttpPost("add-product")]
         public async Task<ActionResult<Product>> AddProduct(Product product) 
         {
@@ -121,21 +122,23 @@ namespace API.Controllers
 
             BaseSpecification<Product> spec = new BaseSpecification<Product>(p => p.Name == product.Name.ToLower());
 
-            newProduct.Category = await _genCategoryRepo.GetByIdAsync(product.Category.Id);
+            newProduct.Category = await _unitOfWork.Repository<ProductCategory>().GetByIdAsync(product.Category.Id);
             
-            if (await _genProductRepo.GetEntityWithSpec(spec) != null) return BadRequest("Name already exists for another product..");
-                        
-            if(await _genProductRepo.AddAsync(newProduct))
-                return Ok(newProduct);
+            if (await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec) != null) return BadRequest("Name already exists for another product..");
+
+            _unitOfWork.Repository<Product>().Add(newProduct);
+
+            if(await _unitOfWork.Complete() > 0) return Created(new Uri($"{Request.Path}/{newProduct.Id}", UriKind.Relative) ,newProduct);
 
             return BadRequest("Failed to add product");               
         }
         
+        // Set authorization only for admin
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file, int id)
         {
             
-            var product = await _genProductRepo.GetByIdAsync(id);
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
 
             var result = await _photoService.AddPhotoAsync(file);
 
@@ -154,31 +157,27 @@ namespace API.Controllers
 
             product.Photos.Add(photo);
 
-            if (await _genProductRepo.SaveAllAsync()) return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
+            if (await _unitOfWork.Complete() > 0) return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
 
             return BadRequest("Failed to add the photo..");
         }
 
+        // Set authorization only for admin
         [HttpDelete("{id}")]
-        public ActionResult DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {   
-            var dummyProduct = new Product 
-            {
-                Id = id
-            };
+            _unitOfWork.Repository<Product>().Delete(new Product {Id = id});
 
-            var success = _genProductRepo.Delete(dummyProduct);
-
-            if (success)
-                return Ok("Deleted successfully.");
+            if (await _unitOfWork.Complete() > 0) return NoContent();
             
             return BadRequest("Failed to remove product..");
         }
 
+        // Set authorization only for admin
         [HttpDelete("delete-photo")]
         public async Task<ActionResult<Product>> DeletePhoto(int ProductId, int PhotoId)
         {
-            var product = await _genProductRepo.GetByIdAsync(ProductId);
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(ProductId);
 
             var photo = product.Photos.FirstOrDefault(Photo => Photo.Id == PhotoId);
 
@@ -193,11 +192,12 @@ namespace API.Controllers
             
             product.Photos.Remove(photo);
 
-            if (await _genProductRepo.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete() > 0) return NoContent();
 
             return BadRequest("Failed to delete the photo..");
         }
         
+        // Set authorization only for admin
         [HttpPut]
         public async Task<ActionResult> UpdateProduct(ProductUpdateDto productUpdateDto) 
         {
@@ -205,21 +205,22 @@ namespace API.Controllers
 
             productUpdateDto.Category.Name = productUpdateDto.Category.Name.ToLower();
             
-            var product = await _genProductRepo.GetByIdAsync(productUpdateDto.Id);
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(productUpdateDto.Id);
 
             _mapper.Map(productUpdateDto, product);
 
-            _genProductRepo.Update(product);
+            _unitOfWork.Repository<Product>().Update(product);
 
-            if (await _genProductRepo.SaveAllAsync()) return NoContent();
+            if (await _unitOfWork.Complete() > 0) return NoContent();
 
             return BadRequest("Failed to update product..");
         }
 
+        // Set authorization only for admin
         [HttpPut("set-main-photo")]
         public async Task<ActionResult> SetMainPhoto(int ProductId, int PhotoId)
         {
-            var product = await _genProductRepo.GetByIdAsync(ProductId);
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(ProductId);
 
             var photo = product.Photos.FirstOrDefault(photo => photo.Id == PhotoId);
 
@@ -228,9 +229,10 @@ namespace API.Controllers
             var currentMain = product.Photos.FirstOrDefault(photo => photo.IsMain);
 
             if (currentMain != null) currentMain.IsMain = false;
+            
             photo.IsMain = true;
 
-            if (await _genProductRepo.SaveAllAsync()) return NoContent();
+            if (await _unitOfWork.Complete() > 0) return NoContent();
 
             return BadRequest("Failed to set main photo..");
         }

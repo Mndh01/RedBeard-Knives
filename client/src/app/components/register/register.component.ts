@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit {
     })
 
     this.registerForm = this.fb.group({
-      firstName: [null, [Validators.required, Validators.pattern("^[a-zA-Z ]{3,25}$")]],
+      userName: [null, [Validators.required, Validators.pattern("^[a-zA-Z ]{3,25}$")]],
       sureName: [null, [Validators.required, Validators.pattern("^[a-zA-Z ]{3,25}$")]],
       gender: [""],
       email: [null, 
@@ -62,10 +62,10 @@ export class RegisterComponent implements OnInit {
     
     this.accountService.register(this.registerForm.value).subscribe(response => {
       this.router.navigateByUrl('/');
-      //To be  outout to the user
+      //To be  output to the user
       console.log(response);
     }, error => {
-      //To be  outout to the user
+      //To be  output to the user
       console.log(error);
     });
   }

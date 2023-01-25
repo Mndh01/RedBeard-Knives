@@ -3,12 +3,12 @@
     
     <h1 class="h3 mb-3 fw-normal">Account information: </h1>
     <div class="registerNameWrapper row">
-      <select class="col-2 color-exclude" formControlName="gender" label="Gender" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'black'}">
+      <select class="col-2 color-exclude" formControlName="gender" title="Gender" label="Gender" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'black'}">
         <option value="" selected disabled hidden>Title</option>
         <option value="Male" >Mr.</option>
         <option value="Female">Ms.</option>
       </select>
-      <app-text-input class="col-5" id="nameInput" formControlName="firstName" [label]="'Name'" [option]="'alphabet'"></app-text-input>
+      <app-text-input class="col-5" id="nameInput" formControlName="userName" [label]="'Name'" [option]="'alphabet'"></app-text-input>
       <app-text-input class="col-5" id="sureNameInput" formControlName="sureName" [label]="'Surename'" [option]="'alphabet'"></app-text-input>
     </div>
 
@@ -18,7 +18,7 @@
     <p *ngIf="registerForm.controls.passwordConfirm.dirty && !passwordConfirmed" class="text-danger">This field must be the same as the password</p>
     
     <div>
-      <input class="form-control" type="text" formControlName="phoneNumber"
+      <input class="form-control" type="text" formControlName="phoneNumber" title="phoneNumber"
       ng2TelInput
       [ng2TelInputOptions]="{initialCountry: 'US'}"
       (hasError)="hasError($event)"

@@ -1,71 +1,88 @@
 <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand">RedBeard</a>
-      <button class="d-none navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="z-index-3 collapse navbar-collapse flex-row " id="navbarNavDropdown">
+  <div class="container-fluid">
+    <a class="navbar-brand">RedBeard</a>
+    <button class="d-none navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="z-index-3 collapse navbar-collapse flex-row " id="navbarNavDropdown">
         <ul class="navbar-nav col-lg-3">
           <li class="nav-item">
-            <a class="nav-link active" routerLink="/home">Home</a>
+            <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/shop">Shop</a>
+            <a class="nav-link" routerLink="/shop" routerLinkActive="active">Shop</a>
           </li>
           <!-- TODO: Show only to admin -->
           <li class="nav-item">
-            <a class="nav-link" routerLink="/admin">Dashboard</a>
+            <a class="nav-link" routerLink="/admin" routerLinkActive="active">Dashboard</a>
           </li>
-          
         </ul>
         <div class="search-bar my-auto col-lg-6">
-          <input class="search-input" type="text" name="search" id="#search-bar" placeholder="Search">
+          <input class="search-input text-input" type="text" name="search" id="search-bar" placeholder="Search">
           <span>
-            <input class="search-submit" type="submit" placeholder="search" value="">
+            <button class="search-submit" type="submit" title="search-bar-submit"></button>
             <i class="fa fa-search"></i>
           </span>
         </div>
-        <ul class="d-none d-lg-flex navbar-nav col-lg-1">
+        <ul class="d-none d-lg-flex justify-content-center col-lg-2 col-xxl-1 navbar-nav">
           <li class="nav-item dropdown" dropdown>
-            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" dropdownToggle>
-              <i class="fa fa-user-circle-o fa-2x"></i>
+            <a class="nav-link dropdown-toggle text-center" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" dropdownToggle>
+              <i *ngIf="(currentUser$ | async) === null" class="fa fa-user-circle-o fa-2x"></i>
+              <h6 *ngIf="(currentUser$ | async) !== null">Welcome, <br> {{(currentUser$ | async).username}}!</h6>
             </a>
             <ul class="user-dropdown dropdown-menu">
               <ng-container *ngIf="(currentUser$ | async) === null">
                 <li><a class="dropdown-item" routerLink="register">Register</a></li>
-                <li><a class="dropdown-item" routerLink="login">Login</a></li>
+                <li><a class="dropdown-item" (click)="showChildModal()">Login</a></li>
               </ng-container>
               <ng-container *ngIf="currentUser$ | async">
-                <li><a class="dropdown-item" (click)="logout()">Logout {{(currentUser$ | async).firstName}}</a></li>
+                <li><a class="dropdown-item" (click)="logout()">Logout {{(currentUser$ | async).userName}}</a></li>
               </ng-container>
             </ul>
           </li>
           <li class="nav-item">
           <a class="nav-link position-relative" routerLink="/basket" >
-              <i class="fa fa-shopping-cart fa-2x mr-5 text-dark"></i>
-              <div *ngIf="(basket$ | async) as basket" class="cart-no">{{basket.items.length}}</div>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <!-- Nav search for small screens -->
-      <div class="d-lg-none search-bar my-auto col-4">
-        <input class="text-input" type="text" name="search" id="#search-bar" placeholder="Search">
-        <span>
-          <input class="search-submit" type="submit" placeholder="search" value="">
-          <i class="fa fa-search"></i>
-        </span>
-      </div>
-
-    </div>
-  </nav>
-
-  <nav class="d-lg-none">
-      <ul class="mobile-nav-list list-group">
-        <li class="mobile-nav-link list-group-item" routerLink="/home"><i class="fa fa-home"></i></li>
-        <li class="mobile-nav-link list-group-item" routerLink="/admin"><i class="fa fa-dashboard"></i></li>
-        <li class="mobile-nav-link list-group-item" routerLink="/shop"><i class="fa fa-shopping-basket"></i></li>
-        <li class="mobile-nav-link list-group-item" routerLink="/basket"><i class="fa fa-shopping-cart"></i></li>
-        <li class="mobile-nav-link list-group-item" routerLink="/"><i class="fa fa-user-circle"></i></li>
+            <i class="fa fa-shopping-cart fa-2x mr-5 text-dark"></i>
+            <div *ngIf="(basket$ | async) as basket" class="cart-no">{{basket.items.length}}</div>
+          </a>
+        </li>
       </ul>
-  </nav>
+    </div>
+    <!-- Nav search for small screens -->
+    <div class="d-lg-none search-bar my-auto col-4">
+      <input class="text-input search-input" type="text" name="search" id="#search-bar" placeholder="Search">
+      <span>
+        <button class="search-submit" type="submit" title="search-bar-submit"></button>
+        <i class="fa fa-search"></i>
+      </span>
+    </div>
+  </div>
+  <!-- End of Nav search for small screens -->
+
+  <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1"
+      role="dialog" aria-labelledby="dialog-child-name">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="dialog-child-name" class="modal-title pull-left">Sign In</h4>
+          <button type="button" class="close btn-close" aria-label="Close" (click)="hideChildModal()">
+            <i class="fa fa-close"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <app-login #LoginComponent (success)="onLogin($event)"></app-login>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<nav class="d-lg-none">
+    <ul class="mobile-nav-list list-group">
+      <li class="mobile-nav-link list-group-item" routerLink="/"><i class="fa fa-home"></i></li>
+      <li class="mobile-nav-link list-group-item" routerLink="/admin"><i class="fa fa-dashboard"></i></li>
+      <li class="mobile-nav-link list-group-item" routerLink="/shop"><i class="fa fa-shopping-basket"></i></li>
+      <li class="mobile-nav-link list-group-item" routerLink="/basket"><i class="fa fa-shopping-cart"></i></li>
+      <li class="mobile-nav-link list-group-item" routerLink="/"><i class="fa fa-user-circle"></i></li>
+    </ul>
+</nav>

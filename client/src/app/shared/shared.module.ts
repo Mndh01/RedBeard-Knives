@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -12,11 +12,17 @@ import { RouterModule } from '@angular/router';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { PagingHeaderComponent } from './components/paging-header/paging-header.component';
 import { PagerComponent } from './components/pager/pager.component';
+import { LoginComponent } from './components/login/login.component';
+import { TextInputComponent } from './components/text-input/text-input.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     PagingHeaderComponent,
-    PagerComponent
+    PagerComponent,
+    LoginComponent,
+    TextInputComponent,
   ],
   imports: [
     CommonModule,
@@ -31,6 +37,7 @@ import { PagerComponent } from './components/pager/pager.component';
     FileUploadModule,
     Ng2TelInputModule,
     PaginationModule.forRoot(),
+    ModalModule.forRoot(),
   ],
   exports: [
     CarouselModule,
@@ -45,6 +52,10 @@ import { PagerComponent } from './components/pager/pager.component';
     PaginationModule,
     PagingHeaderComponent,
     PagerComponent,
+    LoginComponent,
+    TextInputComponent,
+    PaginationModule,
+    ModalModule,
   ]
 })
 export class SharedModule { }

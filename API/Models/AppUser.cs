@@ -6,7 +6,6 @@ namespace API.Models
 {
     public class AppUser : IdentityUser<int>
     {
-        public string FirstName { get; set; }
         public string SureName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }

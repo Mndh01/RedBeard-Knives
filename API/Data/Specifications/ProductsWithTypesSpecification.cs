@@ -30,6 +30,9 @@ namespace API.Data.Specifications
                     case "priceDesc":
                         AddOrderByDescending(p => p.Price);
                         break;
+                    case "topSells":
+                        AddOrderByDescending(p => p.SoldItems);
+                        break;
                     default:
                         AddOrderBy(p => p.Name);
                         break;
@@ -42,27 +45,5 @@ namespace API.Data.Specifications
             AddInclude(p => p.Category);
         }
 
-        // private void SetParams(ProductSpecParams productParams) 
-        // {
-        //     AddInclude(p => p.Category);
-        //     AddOrderBy(p => p.Name);
-        //     ApplyPaging(productParams.PageSize * (productParams.PageIndex - 1), productParams.PageSize);
-
-        //     if(!string.IsNullOrEmpty(productParams.Sort)) 
-        //     {
-        //         switch(productParams.Sort) 
-        //         {
-        //             case "priceAsc":
-        //                 AddOrderBy(p => p.Price);
-        //                 break;
-        //             case "priceDesc":
-        //                 AddOrderByDescending(p => p.Price);
-        //                 break;
-        //             default:
-        //                 AddOrderBy(p => p.Name);
-        //                 break;
-        //         }
-        //     }
-        // }
     }
 }

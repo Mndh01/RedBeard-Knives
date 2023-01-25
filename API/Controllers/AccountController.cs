@@ -56,7 +56,7 @@ namespace API.Controllers
 
             if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
-            var addressExists = await _context.Addresses.FirstOrDefaultAsync(a => a.AddressParts == registerDto.Address.AddressParts);
+            var addressExists = await _context.Addresses.FirstOrDefaultAsync(a => a.FullAddress == registerDto.Address.FullAddress);
 
             if (addressExists == null) 
             {
@@ -65,7 +65,7 @@ namespace API.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            var address = await _context.Addresses.FirstOrDefaultAsync(x => x.AddressParts == registerDto.Address.AddressParts);
+            var address = await _context.Addresses.FirstOrDefaultAsync(x => x.FullAddress == registerDto.Address.FullAddress);
 
             var userAddress = new UserAddresses
             {
@@ -176,12 +176,9 @@ namespace API.Controllers
                 {   
                     value = value.ToLower();
                     property.SetValue(address, value, null);
-                    address.AddressParts += value + " ";
+                    address.FullAddress += value + " ";
                 }
             }
         }
-
-        // private void ToTitle
-
     }
 }

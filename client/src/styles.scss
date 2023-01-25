@@ -1,6 +1,7 @@
 
 /* Importing Bootstrap SCSS file. */
 // @import "~bootstrap/scss/bootstrap";
+
 $primary-color: #E7B133;
 $secondary-color: #222;
 
@@ -15,6 +16,16 @@ body {
     background-color: $secondary-color;
     min-height: 100vh;
     position: relative;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+.slide-text-on-hover {
+    &:hover {
+        padding-left: 30px;
+    } 
+    transition: padding 0.3s ease;
 }
 
 input::-webkit-outer-spin-button,
@@ -72,10 +83,6 @@ select {
 
 .divider{
     margin: 10px 0;
-}
-
-::-webkit-scrollbar {
-    display: none;
 }
 
 .product-tabset > .nav-tabs > li:hover > a {

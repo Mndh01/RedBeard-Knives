@@ -8,8 +8,6 @@ using API.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System;
 
@@ -32,7 +30,6 @@ namespace API.Controllers
             _userManager = userManager;
             _addressService = addressService;
         }
-
         
         [HttpPost]
         public async Task<ActionResult<AddressDto>> AddAddress(AddressDto NewAddress)
@@ -41,13 +38,13 @@ namespace API.Controllers
             
             if (user == null) return Unauthorized("Sing in first..");
             
-            NewAddress.AddressParts = NewAddress.AddressParts.ToLower();
+            NewAddress.FullAddress = NewAddress.FullAddress.ToLower();
 
-            NewAddress.AddressParts = RemoveWhitespace(NewAddress.AddressParts);
+            NewAddress.FullAddress = RemoveWhitespace(NewAddress.FullAddress);
             
             if (user.UserAddresses.Count() > 0) NewAddress.IsCurrent = false;
 
-            var existingAddress = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.AddressParts == NewAddress.AddressParts);
+            var existingAddress = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.FullAddress == NewAddress.FullAddress);
             
             if (existingAddress != null)
             {
@@ -66,7 +63,7 @@ namespace API.Controllers
                 if (result_1 != null) return CreatedAtRoute("get-user", new {id = user.Id} , result_1);
 
                 return BadRequest("Failed to add address.");
-            } 
+            }
 
             var result_2 = await _addressService.AddAddressAsync(NewAddress, user);
 
@@ -86,7 +83,7 @@ namespace API.Controllers
             
             var address = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.Id == AddressToEdit.Id);
 
-            address.AddressParts = AddressToEdit.AddressParts.ToLower();
+            address.FullAddress = AddressToEdit.FullAddress.ToLower();
 
             if (await _addressService.SaveAllAsync()) return Ok(address);
 

@@ -3,8 +3,6 @@ using API.Models;
 
 namespace API.DTOs
 {
-    // Summary:
-    // Does something!
     public class ItemDto
     {
         public int Id { get; set; }

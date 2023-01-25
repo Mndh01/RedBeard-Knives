@@ -46,35 +46,20 @@ namespace API.Data
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
         }
 
-        public async Task<bool> AddAsync(T entityToAdd) 
+        public void Add(T entity) 
         {
-            await _context.Set<T>().AddAsync(entityToAdd);
-
-            return await _context.SaveChangesAsync() > 0;
+            _context.Set<T>().Add(entity);
         }
 
-        public bool Delete(T entity)
+        public void Delete(T entity)
         {
-            var entityToDelete = _context.Set<T>().Find(entity.Id);
-            
-            if (entityToDelete != null)
-            {
-                _context.Set<T>().Remove(entityToDelete);
-                _context.SaveChanges();
-                return true;
-            }   
-            
-            return false;
+            _context.Set<T>().Remove(entity);
         }
 
-        public void Update(T product)
+        public void Update(T entity)
         {
-            _context.Entry(product).State = EntityState.Modified;
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
+            _context.Set<T>().Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
     }
 }
