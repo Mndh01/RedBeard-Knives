@@ -1,0 +1,28 @@
+<div class="row mt-3" >
+    <div class="col-2" *ngFor="let photo of product.photos">
+        <img src="{{photo.url}}" alt="{{photo.url}}" class="img-thumbnail p-1">
+        <div class="text-center">
+            <button  
+                class="btn btn-sm mr-2" 
+                (click)="setMainPhoto(photo)"
+                [ngClass]="photo.isMain ? 'btn-success active' : 'btn-outline-success'"
+                [disabled]="photo.isMain"
+                >Main</button>
+            <button 
+                class="btn btn-sm btn-danger" 
+                title="Delete photo"
+                (click)="deletePhoto(photo)"
+                [disabled]="photo.isMain"
+                ><i class="fa fa-trash"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="photosInputContainer d-flex align-items-center mt-2">
+    <button class="btn btn-primary mr-2" (click)="addPhotos()">Update</button>
+    <button class="btn btn-primary-outline">
+        <span >Select photos</span>
+        <input #photosInput class="btn photosInput" type="file" (change)="setPhotos($event)" multiple/>
+    </button>
+    <span class="px-2" *ngIf="photosToAdd.length > 0"> {{photosToAdd.length}} photo(s) selected</span>
+</div>

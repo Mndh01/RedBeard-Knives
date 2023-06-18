@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShopComponent } from './shop.component';
-import { FormsModule } from '@angular/forms';
 import { ProductItemComponent } from './product-item/product-item.component';
 import { SharedModule } from '../shared/shared.module';
 import { ProductDetailsComponent } from './product-details/product-details.component';
@@ -17,7 +16,6 @@ import { ShopRoutingModule } from './shop-routing.module';
   imports: [
     CommonModule,
     ShopRoutingModule,
-    FormsModule,
     SharedModule,
   ],
   exports: [

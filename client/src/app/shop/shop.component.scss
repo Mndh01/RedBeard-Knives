@@ -4,14 +4,6 @@
   user-select: none;
 }
 
-#productType {
-  cursor: pointer;
-  
-  &:hover {
-    border-left: gold 3px solid;
-  }
-}
-
 .categoryList {
   max-height: 330px;
   overflow-y: scroll;

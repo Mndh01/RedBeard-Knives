@@ -1,0 +1,40 @@
+.row {
+    margin: 0;
+}
+
+.dropdown-menu {
+    padding: 0;
+}
+
+.nav {
+    height: calc(100vh - 70px);
+    max-width: 200px;
+    border: none;
+    background-color: var(--dark-background);
+    z-index: 1;
+    transition: all 0.5s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding-left: 12px;
+    
+    .list-group-item {
+        border: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            border-left: gold 5px solid;
+        }
+    }
+}
+
+.list-group-item.active {
+    background-color: var(--primary-color);
+    color: var(--dark-background) !important;
+    border-left: var(--primary-color) 20px solid !important;
+    border-radius: 6px;
+
+    &:hover {
+        padding-left: 16px;
+        border-left: var(--primary-color) 20px solid !important;
+    }
+}

@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using API.Data;
 using API.DTOs;
 using API.Extensions;
 using API.Interfaces;
@@ -9,7 +8,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System;
 
 namespace API.Controllers
 {
@@ -19,118 +17,117 @@ namespace API.Controllers
         private readonly IAddressService _addressService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
-        private readonly DataContext _context;
-        private readonly IUserRepository _userRepository;
-        public AddressController(DataContext context, UserManager<AppUser> userManager, 
-            IAddressService addressService, IMapper mapper, IUserRepository userRepository)
+        public AddressController(UserManager<AppUser> userManager, IAddressService addressService, IMapper mapper)
         {
-            _userRepository = userRepository;
-            _context = context;
             _mapper = mapper;
             _userManager = userManager;
             _addressService = addressService;
         }
-        
-        [HttpPost]
-        public async Task<ActionResult<AddressDto>> AddAddress(AddressDto NewAddress)
+
+        [HttpGet(Name = "get-address")]
+        public async Task<ActionResult<Address>> GetAddress(int id)
         {
-            var user = await _userRepository.GetUserByEmailAsync(User.GetEmail());
-            
-            if (user == null) return Unauthorized("Sing in first..");
-            
-            NewAddress.FullAddress = NewAddress.FullAddress.ToLower();
+            var user = await _userManager.FindWithAddressByEmailAsync(User.GetEmail());
 
-            NewAddress.FullAddress = RemoveWhitespace(NewAddress.FullAddress);
-            
-            if (user.UserAddresses.Count() > 0) NewAddress.IsCurrent = false;
+            var address = user.Addresses.FirstOrDefault(a => a.Id == id);
 
-            var existingAddress = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.FullAddress == NewAddress.FullAddress);
-            
-            if (existingAddress != null)
-            {
-                if (existingAddress.UserAddresses.Select(ua => ua.User).FirstOrDefault().Id == user.Id) return BadRequest("Address already exists..");
-                
-                UserAddresses address = new UserAddresses
-                {
-                    Address = existingAddress,
-                    User = user
-                };
-                
-                _mapper.Map(NewAddress, address.Address);
+            if (address != null) return Ok(address);
 
-                var result_1 =await _addressService.AddAddressAsync(NewAddress, user);
-                                
-                if (result_1 != null) return CreatedAtRoute("get-user", new {id = user.Id} , result_1);
-
-                return BadRequest("Failed to add address.");
-            }
-
-            var result_2 = await _addressService.AddAddressAsync(NewAddress, user);
-
-            if (result_2 != null) return CreatedAtRoute("get-user", new {id = user.Id} , result_2);
-            
-            return BadRequest("Failed to add address..");
+            return BadRequest("Address does not exist");
         }
 
-        [HttpPut("edit-address")]
-        public async Task<ActionResult<bool>> EditAddress(Address AddressToEdit)
+        
+        [HttpGet("all-addresses")]
+        public async Task<ActionResult<AddressDto>> GetAddresses()
         {
-            var user = await _userRepository.GetUserByEmailAsync(User.GetEmail());
-
-            if (user == null) return false;
-
-            if (!_addressService.AddressExistsForUserById(user, AddressToEdit.Id)) return BadRequest("Address does not exist..");
+            var user = await _userManager.FindWithAddressByEmailAsync(User.GetEmail());
             
-            var address = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.Id == AddressToEdit.Id);
+            return Ok(_mapper.Map<Address[], AddressDto[]>(user.Addresses.ToArray()));
+        }
+        
+        
+        [HttpPost]
+        public async Task<ActionResult<AddressDto>> AddAddress(AddressDto address)
+        {
+            var user = await _userManager.FindWithAddressByEmailAsync(User.GetEmail());
+                                    
+            LowerAddressAndConc(address);
 
-            address.FullAddress = AddressToEdit.FullAddress.ToLower();
+            if (user.Addresses.Count == 0) address.IsCurrent = true;
+            
+            if(address.IsCurrent && user.Addresses.Count > 0) user.Addresses.SingleOrDefault(a => a.IsCurrent).IsCurrent = false;
+            
+            var addressExists = user.Addresses.Any(a => a.FullAddress == address.FullAddress);
 
-            if (await _addressService.SaveAllAsync()) return Ok(address);
+            if (addressExists) return BadRequest("Address already exists");
+
+            var addressNameExists = user.Addresses.Any(a => a.DisplayName == address.DisplayName);
+
+            if (addressNameExists) return BadRequest("Address display name already in use, try another one");
+
+            var result = await _addressService.AddAddressAsync(address, user);
+
+            if (result != null) return CreatedAtRoute("get-address", new {id = address.Id} , result);
+            
+            return BadRequest("Failed to add address");
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<AddressDto>> UpdateAddress(AddressDto updatedAddress)
+        {
+            var user = await _userManager.FindWithAddressByEmailAsync(User.GetEmail());
+
+            var address = user.Addresses.FirstOrDefault(a => a.FullAddress == updatedAddress.FullAddress);
+            
+            if (address == null) return BadRequest("Address does not exist..");
+
+            LowerAddressAndConc(updatedAddress);
+
+            _mapper.Map(updatedAddress, address);
+
+            var result = await _userManager.UpdateAsync(user);
+            
+            if (result.Succeeded) return NoContent();
 
             return BadRequest("Failed to update the address..");
         }
 
         [HttpPut("set-current-address")]
-        public async Task<ActionResult> SetCurrentAddress(int addressId)
+        public async Task<ActionResult> SetCurrentAddress([FromBody] int id)
         {
-            var user = await _userRepository.GetUserByEmailAsync(User.GetEmail());
+            var user = await _userManager.FindWithAddressByEmailAsync(User.GetEmail());
 
-            var currentAddress = user.UserAddresses.Select(ua => ua.Address)
-                        .SingleOrDefault(a => a.IsCurrent);
+            var newCurrentAddress = user.Addresses.SingleOrDefault(a => a.Id == id);
 
-            var newCurrentAddress = user.UserAddresses.Select(ua => ua.Address)
-                        .SingleOrDefault(a => a.Id == addressId);
+            if (newCurrentAddress == null) return BadRequest("Address does not exist");
+            
+            if (newCurrentAddress.IsCurrent) return BadRequest("This is already your current address");
 
-            if (newCurrentAddress != null && newCurrentAddress.IsCurrent) return BadRequest("This is already your current address..");
-
-            if(currentAddress != null) currentAddress.IsCurrent = false;
+            user.Addresses.SingleOrDefault(a => a.IsCurrent).IsCurrent = false;
 
             newCurrentAddress.IsCurrent = true;
 
-            if (await _addressService.SaveAllAsync()) return NoContent();
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded) return NoContent();
 
             return BadRequest("Failed to change current address..");
         }
 
-        [HttpDelete]
-        public async Task<ActionResult> DeleteAddress(int addressId)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAddress(int id)
         {
-            var user = await _userRepository.GetUserByEmailAsync(User.GetEmail());
+            var user = await _userManager.FindWithAddressByEmailAsync(User.GetEmail());
 
-            if (!_addressService.AddressExistsForUserById(user, addressId)) return BadRequest("Failed to find address to delete..");
+            var address = user.Addresses.FirstOrDefault(a => a.Id == id);
             
-            var address = user.UserAddresses.Select(ua => ua.Address)
-                        .SingleOrDefault(a => a.Id == addressId);
+            if (address == null) return BadRequest("Failed to find address to delete..");
 
             if (address.IsCurrent) return BadRequest("You can not remove your current address..");
 
-            if (await _addressService.DeleteAddressAsync(address)) return NoContent();
+            if (await _addressService.DeleteAddressAsync(address, user)) return NoContent();
 
             return BadRequest("Failed to remove address..");
-        }
-        public string RemoveWhitespace(string Input)
-        {
-            return String.Concat(Input.Where(c => !Char.IsWhiteSpace(c)));
         }
     }
 }

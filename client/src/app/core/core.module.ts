@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { ToastrModule } from 'ngx-toastr';
 import { SharedModule } from '../shared/shared.module';
-import { ModalModule } from 'ngx-bootstrap/modal';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
@@ -21,11 +21,12 @@ import { ModalModule } from 'ngx-bootstrap/modal';
       positionClass: 'toast-bottom-right',
       preventDuplicates: true
     }),
-    ModalModule,
+    NgxSpinnerModule,
   ],
   exports: [
     NavbarComponent,
     FooterComponent,
+    NgxSpinnerModule,
   ]
 })
 export class CoreModule { }

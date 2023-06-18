@@ -4,74 +4,46 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
+using API.Extensions;
 using API.Interfaces;
 using API.Models;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services
 {
     public class AddressService : IAddressService
     {
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public AddressService(DataContext context, IMapper mapper)
+        private readonly UserManager<AppUser> _userManager;
+        public AddressService(IMapper mapper, UserManager<AppUser> userManager)
         {
+            _userManager = userManager;
             _mapper = mapper;
-            _context = context;
         }
 
-        public async Task<IEnumerable<AddressDto>> AddAddressAsync(AddressDto NewAddress, AppUser user)
-        {
-            Address address = new Address();
+        public async Task<AddressDto> AddAddressAsync(AddressDto address, AppUser user)
+        {            
+            user.Addresses.Add(_mapper.Map<Address>(address));
 
-            _mapper.Map(NewAddress, address);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded) return address;
             
-
-            UserAddresses userAddress = new UserAddresses
-            {
-                User = user,
-                Address = address
-            };
-
-            var addressAdded = await _context.Addresses.AddAsync(address);
-
-            var userAddressAdded = await _context.UserAddresses.AddAsync(userAddress);
-
-            address.UserAddresses.Add(userAddress);
-
-            if (!await SaveAllAsync()) return null;
-
-            return await _context.UserAddresses.Include(ua => ua.Address)
-                    .Include(ua => ua.User)
-                    .Where(ua => ua.UserId == user.Id)
-                    .Select(ua => ua.Address)
-                    .ProjectTo<AddressDto>(_mapper.ConfigurationProvider)
-                    .ToListAsync();
+            return null;
         }
 
-        public bool AddressExistsForUserById(AppUser user,int addressId)
+        public async Task<bool> DeleteAddressAsync(Address address, AppUser user)
         {
-            var address = user.UserAddresses.Select(ua => ua.Address).FirstOrDefault(a => a.Id == addressId);
+            user.Addresses.Remove(address);
 
-            if (address != null) return true;
+            var result = await _userManager.UpdateAsync(user); 
+
+            if (result.Succeeded) return true;
 
             return false;
-        }
-
-        public async Task<bool> DeleteAddressAsync(Address address)
-        {
-            _context.Addresses.Remove(address);
-
-            if (await SaveAllAsync()) return true;
-
-            return false;
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }        
+        } 
     }
 }

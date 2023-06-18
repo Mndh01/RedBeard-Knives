@@ -13,9 +13,9 @@ namespace API.Interfaces
         Task<IEnumerable<Product>> GetProductsAsync(string type, int price, int inStock, int soldItems);
         Task<IEnumerable<ProductCategory>> GetCategoriesAsync();
         Task<ProductCategory> GetCategoryByNameAsync(string name);
-        Task<PagedList<ItemDto>> GetItemsAsync(ProductParams productParams, string category, int price, int inStock, int soldItems);
-        Task<ItemDto> GetItemAsync(int id);
-        Task<ItemDto> GetItemByNameAsync(string name);
+        Task<PagedList<ProductDto>> GetItemsAsync(ProductParams productParams, string category, int price, int inStock, int soldItems);
+        Task<ProductDto> GetItemAsync(int id);
+        Task<ProductDto> GetItemByNameAsync(string name);
         Task<Product> CheckProductExistsByName(string name);
         Task<bool> AddProductAsync(Product product);
         bool DeleteProduct(int id);

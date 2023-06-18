@@ -1,0 +1,24 @@
+<div class="row">
+        <ul class="d-none d-lg-flex col-2 nav flex-column">
+                <!-- <li class="list-group-item slide-text-on-hover" routerLink='overview' routerLinkActive="router-link-active" >Overview</li> -->
+                <li class="list-group-item slide-text-on-hover" routerLink='products' routerLinkActive="active" >Products</li>
+                <li class="list-group-item slide-text-on-hover" routerLink='users' routerLinkActive="active" >Customers</li>
+                <li class="list-group-item slide-text-on-hover" routerLink='orders' routerLinkActive="active" >Orders</li>
+        </ul>
+        <div class="col-12 col-lg-10">
+                <div class="container-fluid d-lg-none">
+                        <div class="dropdown mb-2">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {{selectedMenu}}
+                                </button>
+                                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
+                                        <!-- <li class="list-group-item slide-text-on-hover" routerLink='overview' routerLinkActive="router-link-active" (click)="changeMenu('Overview')">Overview</li> TODO: Add later with functionality-->
+                                        <li class="list-group-item slide-text-on-hover" routerLink='products' routerLinkActive="router-link-active" (click)="changeMenu('Products')">Products</li>
+                                        <li class="list-group-item slide-text-on-hover" routerLink='users' routerLinkActive="router-link-active" (click)="changeMenu('Customers')">Customers</li>
+                                        <li class="list-group-item slide-text-on-hover" routerLink='orders' routerLinkActive="router-link-active" (click)="changeMenu('Orders')">Orders</li>
+                                </ul>
+                        </div>
+                </div>
+                <router-outlet></router-outlet>
+        </div>
+</div>

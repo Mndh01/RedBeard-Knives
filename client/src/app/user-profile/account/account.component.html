@@ -1,0 +1,73 @@
+<!-- <div class="row">
+    <div class="col-12" *ngIf="isDisabled">
+        <span (click)="switchEditingMode()" class="">
+            <i class="fa fa-pencil-square-o "></i>
+        </span> TODO: Consider adding this for updating any info other than password
+        <h3 class="mb-4">{{user.userName | titlecase}} {{user.sureName | titlecase}}</h3>
+        <p class="text-decoration-underline"><span class="fw-bold">Email: </span>{{user.email}}</p>
+        <p class="text-decoration-underline"><span class="fw-bold">Phone Number:</span> {{user.phoneNumber}}</p>
+        <p class="text-decoration-underline"><span class="fw-bold">Date of birth: </span>{{user.dateOfBirth | date: 'dd/MM/yyyy'}}</p>
+        <p class="text-decoration-underline"><span class="fw-bold">Gender: </span>{{user.gender}}</p>
+        <button class="btn btn-outline" (click)="switchEditingMode()">Change Password</button>
+    </div>
+    <div class="col-3">
+        <span  *ngIf="user.photoUrl">
+            <img src="{{user.photoUrl || './../assets/Old-site/images/rb_logo_metal_print.png'}}" alt="user_photo" class="avatar img-thumbnail mb-5">
+        </span>
+    </div>
+    <div *ngIf="!isDisabled" [formGroup]="passwordForm">
+        <app-form-control-input formControlName="oldPassword" [label]="'Current Password'" [type]="'password'"></app-form-control-input>
+        <app-form-control-input formControlName="newPassword" [label]="'New Password'" [type]="'password'"></app-form-control-input>
+        <app-form-control-input formControlName="newPasswordConfirm" [label]="'Confirm New Password'" [type]="'password'"></app-form-control-input>
+        <button class="btn btn-danger mr-2" (click)="switchEditingMode()">Cancel</button>
+        <button class="btn btn-outline" [disabled]="passwordForm.get('newPassword').value !== passwordForm.get('newPasswordConfirm').value || !passwordForm.valid" (click)="changePassword()">Change Password</button>
+    </div>
+</div> -->
+
+<div class="container-fluid" *ngIf="user">
+    <section class="container d-flex flex-column justify-content-center mb-3">
+        <h2 class="mb-4">My Profile</h2>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5 class="d-inline-block">Email</h5>
+            <input class="text-input form-floating col-12 col-sm-5" [placeholder]="user.email" disabled>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Name</h5>
+            <input class="text-input form-floating col-12 col-sm-5" [placeholder]="user.userName" disabled>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Surename</h5>
+            <input class="text-input form-floating col-12 col-sm-5" [placeholder]="user.sureName" disabled>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Date of Birth</h5>
+            <input class="text-input form-floating col-12 col-sm-5" [placeholder]="user.dateOfBirth | date: 'medium'" disabled>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Gender</h5>
+            <input class="text-input form-floating col-12 col-sm-3" [placeholder]="user.gender" disabled>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Number</h5>
+            <input class=" text-input form-floating col-12 col-sm-3" [placeholder]="user.phoneNumber" disabled>
+        </div>
+    </section>
+    <section class="container d-flex flex-column justify-content-center" [formGroup]="passwordForm">
+        <h2 class="mb-4">Change Password</h2>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Current Password</h5>
+            <app-form-control-input class="col-12 col-sm-5"  formControlName="oldPassword" [label]="'Current Password'" [type]="'password'"></app-form-control-input>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>New Password</h5>
+            <app-form-control-input class="col-12 col-sm-5"  formControlName="newPassword" [label]="'New Password'" [type]="'password'"></app-form-control-input>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+            <h5>Confirm Password</h5>
+            <app-form-control-input class="col-12 col-sm-5" formControlName="newPasswordConfirm" [label]="'Confirm New Password'" [type]="'password'"></app-form-control-input>
+        </div>
+        <button class="btn btn-primary align-self-sm-end col-6 col-sm-4 col-md-3" [disabled]="passwordForm.get('newPassword').value !== passwordForm.get('newPasswordConfirm').value || !passwordForm.valid" (click)="changePassword()">Change password</button>
+    </section>
+
+</div>
+<h1 class="text-center text-danger" *ngIf="!user">Profile page did not load correctly..</h1>

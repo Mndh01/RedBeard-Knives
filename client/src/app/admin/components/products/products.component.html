@@ -1,0 +1,120 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-start mb-2">
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add New
+            </button>
+            <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
+                    <li class="list-group-item slide-text-on-hover" (click)="showProductModal()">Product</li>
+                    <li class="list-group-item slide-text-on-hover" (click)="showCategoryModal()">Category</li>
+            </ul>
+        </div>
+    </div>
+    <div class="table-responsive" *ngIf="products">
+         <!-- <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase"><strong>#</strong></div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Photo</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Type</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Name</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Price</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Stock</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Sold</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let product of products">
+                <tr class="product-row" routerLink="{{product.id}}" routerLinkActive="router-link-active" >
+                        <td class="align-middle text-center"><strong>{{product.id}}</strong></td>
+                        <td scope="row">
+                            <div class="p-2 text-center">
+                                <img src="{{product.photoUrl || './../assets/Old-site/images/rb_logo_metal_print.png'}}"
+                                alt="{{product.name | titlecase}}"
+                                class="img-fluid"
+                                style="max-height: 50px;">
+                            </div>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span style="font-size: 15px;" class="text-muted font-italic d-block">
+                                {{product.category.name | titlecase}}
+                            </span>
+                        </td>
+                        <td class="align-middle text-center">
+                            {{product.name | titlecase}}
+                        </td>
+                        <td class="align-middle text-center">
+                            <strong>${{product.price}}</strong>
+                        </td>
+                        <td class="align-middle text-center">
+                            <strong>{{product.inStock}}</strong>
+                        </td>
+                        <td class="align-middle text-center">
+                            <strong>{{product.soldItems}}</strong>
+                        </td>
+                    </tr>
+            </ng-container>
+        </tbody>
+    </table> -->
+        <app-generic-table [data]="products" #table></app-generic-table>
+    </div>
+    <div class="d-flex justify-content-center py-2" *ngIf="pagination && pagination.count > 0">
+        <app-pager [pagination]="pagination" (pageChanged)="onPageChanged($event)"></app-pager>
+    </div>
+</div>
+
+<!-- Product add modal -->
+<app-modal #productAddModal (onHide)="onProductModalHide()">
+    <div id="label">Add Product</div>
+    <div class="d-flex mb-1">
+        <Select #categorySelect class="px-2" (change)="setCategoryInForm($event)" label="Category" title="setCategory">
+            <option value="" disabled selected class="d-none">Category</option>
+            <option *ngFor="let category of categories" [ngValue]="category">{{category.name | titlecase}}</option>
+        </Select>
+        <div class="photosInputContainer ml-2 d-flex align-items-center">
+            <button class="btn btn-primary-outline">
+                <span >Add photos</span>
+                <input #photosInput class="btn photosInput" type="file" (change)="setPhotosInForm($event)" multiple/>
+            </button>
+            <span class="px-2" *ngIf="photos.length > 0"> {{photos.length}} photo(s) selected</span>
+        </div>
+    </div>
+    <form #productForm [formGroup]="productAddForm" class="form-inline mt-2 mt-md-0" 
+    (ngSubmit)="productAddForm.valid && addProduct()" autocomplete="off"> 
+        <app-form-control-input [formControl]="getFormControl('name')" [label]="'Product Name'"></app-form-control-input>
+        <app-form-control-input [formControl]="getFormControl('price')" [label]="'Price'" type="number"></app-form-control-input>
+        <app-form-control-input [formControl]="getFormControl('description')" [label]="'Description'"></app-form-control-input>
+        <app-form-control-input [formControl]="getFormControl('inStock')" [label]="'In Stock'" type="number"></app-form-control-input>
+        <app-form-control-input [formControl]="getFormControl('soldItems')" [label]="'Sold items count'" type="number"></app-form-control-input>
+        <div>
+                <button [disabled]="!productAddForm.valid" type="submit" class="btn btn-primary my-2 my-sm-1" >Add Product</button>
+        </div>
+        <button (click)="showFormValue()" type="button">Show values</button>
+    </form>
+
+</app-modal>
+
+<!-- Category add modal -->
+<app-modal #categoryAddModal (onHide)="onCategoryModalHide()">
+    <div id="label">Add Category</div>
+    <div>
+        <input type="text" class="form-control text-input" name="categoryToAdd" [(ngModel)]="categoryToAdd" placeholder="Category Name">                    
+        <button [disabled]='categoryToAdd == "" || categoryToAdd === undefined' type="submit" 
+        class="btn btn-primary my-2 my-sm-1" (click)="addCategory()">Add Category
+        </button>
+    </div>
+</app-modal>

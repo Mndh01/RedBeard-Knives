@@ -1,29 +1,48 @@
 
 /* Importing Bootstrap SCSS file. */
 // @import "~bootstrap/scss/bootstrap";
-
-$primary-color: #E7B133;
-$secondary-color: #222;
+:root{
+    --primary-color: #E7B133;
+    --body-background: #222;
+    --dark-background: #32383e;
+}
 
 *:not(.invalid-feedback, .text-danger, .color-exclude) {
-    color: $primary-color !important;
+    color: var(--primary-color) !important;
 }
 html {
     scroll-behavior: smooth;
     min-height: 100vh;
 }
 body {
-    background-color: $secondary-color;
+    background-color: var(--body-background);
     min-height: 100vh;
     position: relative;
+    
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 ::-webkit-scrollbar {
-    display: none;
+    width: 10px;
+    background-color: #444;
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 6px;
+}
+@media (max-width: 991px) {
+    body {
+        padding-bottom: 50px;
+    }
 }
 
 .slide-text-on-hover {
     &:hover {
+        border-left: gold solid 3px;
         padding-left: 30px;
+        cursor: pointer;
     } 
     transition: padding 0.3s ease;
 }
@@ -38,7 +57,7 @@ input::-webkit-inner-spin-button {
 
 input {
     border: none !important;
-    width: 100%;
+    // width: 100%;
     background-color: #32383e;
     outline: none;
 }
@@ -46,11 +65,30 @@ input {
 .text-input {
     border: none;
     border-radius: 5px;
-    width: 100%;
-    color: $primary-color;
+    color: var(--primary-color);
     background-color: #32383e !important;
     outline: none;
     margin-bottom: .3rem;
+    
+    display: block;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #272b30;
+    background-clip: padding-box;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:focus {
+        color: #272b30;
+        background-color: #fff;
+        border-color: #9d9fa2;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(58, 63, 68, 0.25);
+    }
+      
 }
 
 select {
@@ -58,18 +96,18 @@ select {
     border: none;
     border-radius: 5px;
     width: max-content;
-    color: $primary-color;
+    color: var(--primary-color);
     background-color: #32383e !important;
     outline: none;
     
     ul {
         background-color: #32383e;
-        color: $primary-color;
+        color: var(--primary-color);
     }
 
     option {
-        color: $primary-color;
-        border-bottom: $primary-color 1px solid;
+        color: var(--primary-color);
+        border-bottom: var(--primary-color) 1px solid;
     }
 }
 
@@ -86,7 +124,7 @@ select {
 }
 
 .product-tabset > .nav-tabs > li:hover > a {
-    border-bottom: 1px $primary-color solid;
+    border-bottom: 1px var(--primary-color) solid;
 }
 
 .ml-1 {
@@ -107,6 +145,9 @@ select {
 .mr-3 {
     margin-right: 10px;
 }
+.mt-6 {
+    margin-top: 60px;
+}
 
 .arrow-container{
     display: flex;
@@ -122,18 +163,18 @@ select {
     transition: all .2s ease;
 
         &:hover {
-            background-color: $primary-color;
+            background-color: var(--primary-color);
             cursor: pointer;
         }
 
         & .fa {
-            color: $primary-color;
+            color: var(--primary-color);
             font-size: 20px;
             transition: color .2s ease;
         }
         
         &:hover .fa{
-            color: $secondary-color;
+            color: var(--dark-background);
         }
 
 }
@@ -149,3 +190,35 @@ select {
 .form-control {
     background-color: #32383e;
 }
+.bg-dark {
+    background-color: var(--dark-background) !important;
+}
+.tab-group-item {
+    cursor: pointer;
+    user-select: none;
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-left-radius: 7px !important;
+    border-bottom-right-radius: 7px !important;
+    &:hover:not(.active) {
+        color: var(--dark-background) !important;
+        background-color: var(--primary-color) !important;
+    }
+}
+.content-table {
+    box-sizing: border-box;
+    overflow: scroll;
+    
+    &::-webkit-scrollbar {
+        display: block !important;
+    }
+}
+.dropdown-menu {
+    max-height: 165px;
+    overflow-y: auto;
+    padding: 0;
+}
+// .dropdown-toggle {
+//     height: 40px;
+//     padding: 0 10px;
+// }

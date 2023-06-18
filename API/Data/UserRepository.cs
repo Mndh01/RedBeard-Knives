@@ -20,23 +20,21 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task<MemberDto> GetMemberAsync(int id)
+        public async Task<UserDto> GetMemberAsync(int id)
         {            
             return await _context.Users
-                .Include(u => u.UserAddresses)
-                .ThenInclude(ua => ua.Address)
+                .Include(u => u.Addresses)
                 .Where(x => x.Id == id)
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();                
-        }
+        } 
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        public async Task<IEnumerable<UserDto>> GetMembersAsync()
         {            
             return await _context.Users
                 .Include(u => u.Photo)
-                .Include(u => u.UserAddresses)
-                .ThenInclude(ua => ua.Address)
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                .Include(u => u.Addresses)
+                .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();                
         }
 
@@ -44,8 +42,7 @@ namespace API.Data
         {
             return await _context.Users
                 .Include(p => p.Photo)
-                .Include(ua => ua.UserAddresses)
-                .ThenInclude(ua => ua.Address)
+                .Include(u => u.Addresses)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         
@@ -53,8 +50,7 @@ namespace API.Data
         {
             return await _context.Users
                 .Include(p => p.Photo)
-                .Include(a => a.UserAddresses)
-                .ThenInclude(ua => ua.Address)
+                .Include(u => u.Addresses)
                 .FirstOrDefaultAsync(x => x.UserName == username);
         }
 
@@ -62,8 +58,7 @@ namespace API.Data
         {
             return await _context.Users
                 .Include(p => p.Photo)
-                .Include(ua => ua.UserAddresses)
-                .ThenInclude(ua => ua.Address)
+                .Include(u => u.Addresses)
                 .FirstOrDefaultAsync(x => x.Email == email);
         }
 
@@ -71,8 +66,7 @@ namespace API.Data
         {
             return await _context.Users
                 .Include(p => p.Photo)
-                .Include(a => a.UserAddresses)
-                .ThenInclude(ua => ua.Address)
+                .Include(u => u.Addresses)
                 .ToListAsync();            
         }
 

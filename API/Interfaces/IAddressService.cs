@@ -9,9 +9,7 @@ namespace API.Interfaces
 {
     public interface IAddressService
     {
-        Task<IEnumerable<AddressDto>> AddAddressAsync(AddressDto address, AppUser user);
-        bool AddressExistsForUserById(AppUser user, int addressId);
-        Task<bool> DeleteAddressAsync(Address address);
-        Task<bool> SaveAllAsync();
+        Task<AddressDto> AddAddressAsync(AddressDto address, AppUser user);
+        Task<bool> DeleteAddressAsync(Address address, AppUser user);
     }
 }

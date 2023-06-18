@@ -17,18 +17,18 @@
             <a class="nav-link" routerLink="/admin" routerLinkActive="active">Dashboard</a>
           </li>
         </ul>
-        <div class="search-bar my-auto col-lg-6">
+        <!-- <div class="search-bar my-auto col-lg-6">
           <input class="search-input text-input" type="text" name="search" id="search-bar" placeholder="Search">
           <span>
             <button class="search-submit" type="submit" title="search-bar-submit"></button>
             <i class="fa fa-search"></i>
           </span>
-        </div>
+        </div> -->
         <ul class="d-none d-lg-flex justify-content-center col-lg-2 col-xxl-1 navbar-nav">
           <li class="nav-item dropdown" dropdown>
             <a class="nav-link dropdown-toggle text-center" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" dropdownToggle>
-              <i *ngIf="(currentUser$ | async) === null" class="fa fa-user-circle-o fa-2x"></i>
-              <h6 *ngIf="(currentUser$ | async) !== null">Welcome, <br> {{(currentUser$ | async).username}}!</h6>
+              <i *ngIf="(currentUser$ | async) === null" class="fa fa-user-circle-o fa-2x"><i class="fa fa-sign-in ml-1 fs-3"></i></i>
+              <h6 *ngIf="(currentUser$ | async) !== null">Welcome, <br> {{(currentUser$ | async).userName | titlecase}}! <i class="fa fa-caret-down"></i></h6>
             </a>
             <ul class="user-dropdown dropdown-menu">
               <ng-container *ngIf="(currentUser$ | async) === null">
@@ -36,7 +36,8 @@
                 <li><a class="dropdown-item" (click)="showChildModal()">Login</a></li>
               </ng-container>
               <ng-container *ngIf="currentUser$ | async">
-                <li><a class="dropdown-item" (click)="logout()">Logout {{(currentUser$ | async).userName}}</a></li>
+                <li><a class="dropdown-item" routerLink="profile">My Account</a></li>
+                <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
               </ng-container>
             </ul>
           </li>
@@ -49,32 +50,39 @@
       </ul>
     </div>
     <!-- Nav search for small screens -->
-    <div class="d-lg-none search-bar my-auto col-4">
+    <!-- <div class="d-lg-none search-bar my-auto col-4">
       <input class="text-input search-input" type="text" name="search" id="#search-bar" placeholder="Search">
       <span>
         <button class="search-submit" type="submit" title="search-bar-submit"></button>
         <i class="fa fa-search"></i>
       </span>
-    </div>
+    </div> -->
+    <ul class="justify-content-center d-lg-none navbar-nav">
+      <li class="nav-item dropdown" dropdown>
+        <a class="nav-link dropdown-toggle text-center" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" dropdownToggle>
+        <i *ngIf="(currentUser$ | async) === null" class="fa fa-user-circle-o fa-2x"><i class="fa fa-sign-in ml-1 fs-3"></i></i>
+        <h6 *ngIf="(currentUser$ | async) !== null">Welcome, <br> {{(currentUser$ | async).userName | titlecase}}! <i class="fa fa-caret-down"></i></h6>
+        </a>
+        <ul class="user-dropdown dropdown-menu">
+          <ng-container *ngIf="(currentUser$ | async) === null">
+            <li><a class="dropdown-item" routerLink="register">Register</a></li>
+            <li><a class="dropdown-item" (click)="showChildModal()">Login</a></li>
+          </ng-container>
+          <ng-container *ngIf="currentUser$ | async">
+            <li><a class="dropdown-item" (click)="logout()">Logout <i class="fa fa-sign-out"></i></a></li>
+          </ng-container>
+        </ul>
+      </li>
+    </ul>
+    <!-- <button class="d-lg-none logout-sm-screen" (click)="logout()">Sign out <i class="fa fa-sign-out"></i></button> -->
   </div>
   <!-- End of Nav search for small screens -->
 
-  <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1"
-      role="dialog" aria-labelledby="dialog-child-name">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 id="dialog-child-name" class="modal-title pull-left">Sign In</h4>
-          <button type="button" class="close btn-close" aria-label="Close" (click)="hideChildModal()">
-            <i class="fa fa-close"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <app-login #LoginComponent (success)="onLogin($event)"></app-login>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Login Modal -->
+  <app-modal #loginModal (onHide)="onModalHide()">
+    <div id="label">Sign in</div>
+    <app-login #LoginComponent (success)="onLogin($event)"></app-login>
+  </app-modal>
 </nav>
 
 <nav class="d-lg-none">
@@ -83,6 +91,6 @@
       <li class="mobile-nav-link list-group-item" routerLink="/admin"><i class="fa fa-dashboard"></i></li>
       <li class="mobile-nav-link list-group-item" routerLink="/shop"><i class="fa fa-shopping-basket"></i></li>
       <li class="mobile-nav-link list-group-item" routerLink="/basket"><i class="fa fa-shopping-cart"></i></li>
-      <li class="mobile-nav-link list-group-item" routerLink="/"><i class="fa fa-user-circle"></i></li>
+      <li class="mobile-nav-link list-group-item" routerLink="/profile"><i class="fa fa-user-circle"></i></li>
     </ul>
 </nav>

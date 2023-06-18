@@ -1,0 +1,58 @@
+<div class="container-fluid" *ngIf="user">
+    <section class="container d-flex flex-column justify-content-center mb-3">
+        <h2>My Profile</h2>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="d-inline-block">Email</h5>
+            <input class="text-input form-floating col-6" [placeholder]="user.email" disabled>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>Name</h5>
+            <input class="text-input form-floating col-6" [placeholder]="user.userName" disabled>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>Surename</h5>
+            <input class="text-input form-floating col-6" [placeholder]="user.sureName" disabled>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>Gender</h5>
+            <input class="text-input form-floating col-6" [placeholder]="user.gender" disabled>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>Date of Birth</h5>
+            <input class=" text-input form-floating col-6" [placeholder]="user.dateOfBirth" disabled>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>Number</h5>
+            <input class=" text-input form-floating col-6" [placeholder]="user.phoneNumber" disabled>
+        </div>
+    </section>
+    <section>
+        <div class="row" *ngIf="user.orders.length > 0">
+            <div class="col-12">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Order</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let order of user.orders" routerLink="{{order.id}}"  style="cursor: pointer;">
+                            <th># {{order.id}}</th>
+                            <td>{{order.orderDate | date: 'medium'}}</td>
+                            <td>{{order.total | currency}}</td>
+                            <td>{{order.status}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center py-2" *ngIf="pagination && pagination.count > 0">
+            <app-pager [pagination]="pagination" (pageChanged)="onPageChanged($event)"></app-pager>
+        </div>
+    </section>
+    <button class="btn btn-primary" (click)="getUserOrders()">Show Orders</button>
+</div>
+<h1 class="text-center text-danger" *ngIf="!user">User did not load correctly..</h1>

@@ -2,9 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Basket, IBasket, IBasketItem, IBasketTotals } from 'src/app/models/Basket';
+import { Basket, IBasket, IBasketItem, IBasketTotals } from 'src/app/basket/Basket';
 import { map } from 'rxjs/operators';
-import { Product } from '../models/Product';
+import { Product } from '../shop/models/Product';
+import { DeliveryMethod } from '../shared/models/deliveryMethod';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,24 @@ export class BasketService {
   basketTotal$ = this.basketTotalSource.asObservable();
 
   constructor(private http: HttpClient) { }
+
+  createPaymentIntent() {
+    return this.http.post<Basket>(this.baseUrl + 'payments/' + this.getCurrentBasketValue()?.id, {})
+    .pipe(
+      map((basket: Basket) => {
+        this.basketSource.next(basket);
+      })
+    )
+  }
+
+  setShippingPrice(deliveryMethod: DeliveryMethod) {
+    const basket = this.getCurrentBasketValue();
+    if(basket) {
+      basket.deliveryMethodId = deliveryMethod.id;
+      basket.shippingPrice = deliveryMethod.price;
+      this.setBasket(basket);
+    }
+  }
 
   getBasket(id: string) {
     return this.http.get<IBasket>(this.baseUrl + 'basket?id=' + id)
@@ -39,7 +58,7 @@ export class BasketService {
       this.basketSource.next(response);
       this.calculateTotals();
     }, error => {
-      console.log(error); // To be replaced with a toastr (notification)
+      console.log(error); // TODO: replace with a toastr (notification)
     })
   }
 
@@ -94,6 +113,12 @@ export class BasketService {
         console.log(error);
       })
   }
+
+  deleteLocalBasket() {
+    this.basketSource.next(null);
+    this.basketTotalSource.next(null);
+    localStorage.removeItem('basket_id')
+  }
   
   private AddOrUpdateItem(items: IBasketItem[], itemToAdd: IBasketItem, quantity: number): 
     IBasketItem[] {
@@ -127,10 +152,9 @@ export class BasketService {
 
   private calculateTotals() {
     const basket = this.getCurrentBasketValue();
-    const shipping = 0;
     const subtotal = basket.items.reduce((a, b) => (b.price * b.quantity) + a, 0);
-    const total = subtotal + shipping;
-    this.basketTotalSource.next({shipping, total, subtotal});
+    const total = subtotal + basket.shippingPrice;
+    this.basketTotalSource.next({shipping: basket.shippingPrice, total, subtotal});
   }
 }
 

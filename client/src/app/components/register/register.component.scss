@@ -1,15 +1,10 @@
 @import "~/src/styles.scss";
 
-:not(*:last-child) {
-    margin-bottom: 5px;
-    color: $primary-color;
-}
-
 .registerNameWrapper {
     flex-wrap: nowrap;
     margin: 0;
 
-    app-text-input {
+    app-form-control-input {
         padding: 0 0 0 3px ;
         flex-grow: .5;
     }
@@ -37,9 +32,8 @@
     height: 50px;
     padding: 0px;
     margin: 0;
-    background-color: white;
+    background-color: var(--dark-background);
     border-radius: 5px;
-    border: 1px solid #ced4da;
     position: relative;
 
     input {

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using API.Helpers;
 using API.Interfaces;
@@ -26,7 +28,6 @@ namespace API.Services
         public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
         {
             var uploadResult = new ImageUploadResult();
-
             if (file.Length > 0)
             {
                 using var stream = file.OpenReadStream(); 
@@ -35,12 +36,12 @@ namespace API.Services
                     File = new FileDescription(file.FileName, stream),
                     Transformation = new Transformation().Height(350).Width(300)
                 };
-                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                uploadResult = await _cloudinary.UploadLargeAsync(uploadParams);
             }
 
             return uploadResult;
         }
-
+        
         public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
             var deleteParams = new DeletionParams(publicId);

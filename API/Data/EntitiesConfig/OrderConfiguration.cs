@@ -13,6 +13,9 @@ namespace API.Data.EntitiesConfig
             {
                 a.WithOwner();
             });
+
+
+            // builder.HasOne(o => o.DeliveryMethod).WithMany().HasForeignKey(o => o.DeliveryMethodId);
                 
             builder.Property(s => s.Status).HasConversion(
                 o => o.ToString(),

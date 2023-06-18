@@ -1,0 +1,37 @@
+<table class="table enable-scroll">
+    <thead>
+        <tr>
+            <th scope="col"  *ngIf="photoUrls.length > 0">
+                <div class="p-2 px-3 text-uppercase text-center"><strong>Photo</strong></div>
+            </th>
+            <th scope="col" *ngFor="let key of tableKeys">
+                <div class="p-2 px-3 text-uppercase text-center"><strong>{{key}}</strong></div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let object of data; index as i">
+            <tr class="table-row" routerLink="{{object.id}}" routerLinkActive="router-link-active" >
+                    <td class="img-table-data text-center" *ngIf="photoUrls.length > 0"><img class="rounded" src="{{photoUrls[i]}}" alt="photo"></td>
+                    <td class="align-middle text-center" *ngFor="let value of tableValues[i]">
+                        <div *ngIf="value == null && value == undefined;else notNull"><strong>Null</strong></div>
+                        <ng-template #notNull [ngSwitch]="getType(value, i)">
+                            <div *ngSwitchCase="'number'">
+                                <strong>{{value}}</strong>
+                            </div>
+                            <div *ngSwitchCase="'string'">
+                                <div *ngIf="!value.includes('@') && !value.includes('.'); else email">{{(value | titlecase)}}</div>
+                                <ng-template #email>{{value}}</ng-template>
+                            </div>
+                            <div *ngSwitchDefault>{{value}}</div>
+                        </ng-template>
+                    </td>
+                </tr>
+        </ng-container>
+    </tbody>
+</table>
+
+<!-- <div>{{tableKeys}}</div> -->
+<!-- <div *ngFor="let value of tableValues; index as i">{{tableValues[i]}}</div> -->
+
+<!-- <button (click)="showValues()">Show values</button> -->

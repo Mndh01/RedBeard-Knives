@@ -8,73 +8,19 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 py-3 mb-1">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" style="background-color: var(--secondary-color);">
-                                            <div class="p-2 px-3 text-uppercase">Product</div>
-                                        </th>
-                                        <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
-                                            <div class="p-2 px-3 text-uppercase">Price</div>
-                                        </th>
-                                        <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
-                                            <div class="p-2 px-3 text-uppercase">Quantity</div>
-                                        </th>
-                                        <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
-                                            <div class="p-2 px-3 text-uppercase">Total</div>
-                                        </th>
-                                        <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
-                                            <div class="p-2 px-3 text-uppercase">Remove</div>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody >
-                                    <tr *ngFor="let item of (basket$ | async).items">
-                                        <th scope="row">
-                                            <div class="p-2">
-                                                <img src="{{item.photoUrl}}"
-                                                 alt="{{item.productName}}"
-                                                 class="img-fluid"
-                                                 style="max-height: 50px;">
-                                                 <div class="ml-3 d-inline-block align-middle">
-                                                    <h5 class="mb-0">
-
-                                                        <!-- The routing should be set appropiatly here -->
-                                                        <a routerLink="/product/{{item.id}}" style="text-decoration: none;">
-                                                            {{item.productName | titlecase}}
-                                                        </a>
-                                                        <h5>
-                                                            <span style="font-size: 15px;" class="text-muted
-                                                             font-italic d-block">Type: {{item.type | titlecase}}</span>
-                                                        </h5>
-                                                    </h5>
-                                                 </div>
-                                                
-                                            </div>
-                                        </th>
-                                        <td class="align-middle text-center"><strong>${{item.price}}
-                                        </strong></td>
-                                        <td class="align-middle text-center">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <i (click)="decrementItemQuantity(item)" class="fa fa-minus-circle text-warning mr-2"
-                                                    style="cursor: pointer; font-size: 1.5em;"></i>
-                                                <span class="font-weight-bold" 
-                                                    style="font-size: 1.5em;">{{item.quantity}}</span>
-                                                <i (click)="incrementItemQuantity(item)" class="fa fa-plus-circle text-warning mx-2" 
-                                                    style="cursor: pointer; font-size: 1.5em;"></i>
-                                            </div>
-                                        </td>
-                                        <td class="align-middle text-center"><strong>${{item.price * item.quantity}}</strong></td>
-                                        <td class="align-middle text-center">
-                                            <a class="text-danger">
-                                                <i (click)="removeBasketItem(item)" class="fa fa-trash" style="font-size: 1.5em;"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <app-basket-summary
+                            (incrementItem)="incrementItemQuantity($event)"
+                            (decrementItem)="decrementItemQuantity($event)"
+                            (removeItem)="removeBasketItem($event)"
+                        ></app-basket-summary>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 offset-6">
+                        <app-order-totals></app-order-totals>
+                        <a routerLink="/checkout" class="btn btn-outline-primary py-2 btn-block">
+                            Proceed to checkout
+                        </a>
                     </div>
                 </div>
             </div>
@@ -94,7 +40,7 @@
                         <strong style="font-style: italic;">{{item.productName}}</strong>
                     </h1>
                     <ul>
-                        <li><h4><strong>Type:</strong> {{item.type}}</h4></li>
+                        <li><h4><strong>Type:</strong> {{item.category}}</h4></li>
                         <li><h4><strong>Price:</strong> {{item.price}}</h4></li>
                         <li><h4><strong>Quantity:</strong> {{item.quantity}}</h4></li>
                         <li><h4><strong>SubTotal:</strong> ${{item.price * item.quantity}}</h4> </li>
@@ -126,7 +72,7 @@
                         <strong style="font-style: italic;">{{item.productName}}</strong>
                     </h2>
                     <ul>
-                        <li><strong>Type:</strong> {{item.type}}</li>
+                        <li><strong>Type:</strong> {{item.category}}</li>
                         <li>Price: ${{item.price}}</li>
                         <li>Quantity: {{item.quantity}}</li>
                         <li>Subtotal: ${{item.price * item.quantity}}</li>

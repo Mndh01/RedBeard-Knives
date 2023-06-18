@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using API.DTOs;
+using API.DTOs.Admin;
 using API.Models;
 using API.Models.OrderAggregate;
 using AutoMapper;
-using AutoMapper.Internal;
 
 namespace API.Helpers
 {
@@ -14,12 +13,18 @@ namespace API.Helpers
         public AutoMapperProfiles()
         {
             
-            CreateMap<Product, ItemDto>()
-                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src =>
-                    src.Photos.FirstOrDefault(x => x.IsMain).Url));
-            CreateMap<Product, ProductUpdateDto>();
-            CreateMap<Photo, PhotoDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToLower()))
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => 
+                !String.IsNullOrEmpty(src.PhotoUrl) ? src.PhotoUrl 
+                : src.Photos.FirstOrDefault(x => x.IsMain).Url))
+                .ReverseMap();
             
+            CreateMap<ProductUpdateDto, Product>();
+            CreateMap<Photo, PhotoDto>().ReverseMap();
+
+            CreateMap<Review, ReviewDto>().ReverseMap();
+                        
             CreateMap<Models.Address, AddressDto>().ReverseMap();
             CreateMap<AddressDto, Models.OrderAggregate.Address>();
             
@@ -30,12 +35,17 @@ namespace API.Helpers
             CreateMap<Order, OrderToReturnDto>()
                 .ForMember(dest => dest.DeliveryMethod, opt => opt.MapFrom(src => src.DeliveryMethod.ShortName))
                 .ForMember(dest => dest.ShippingPrice, opt => opt.MapFrom(src => src.DeliveryMethod.Price));
-            
-            CreateMap<RegisterDto, AppUser>();
-            CreateMap<AppUser, MemberDto>()
+            CreateMap<Order, OrderForAdminDto>()
+                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate.DateTime.ToString("dd/MM/yyyy HH:mm")));
+                
+            CreateMap<RegisterDto, AppUser>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.FirstName));
+            CreateMap<AppUser, UserDto>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url))
-                .ForMember(dest => dest.Addresses,opt => opt.MapFrom(src => src.UserAddresses.Select(ua => ua.Address)))
-                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => DateTime.Now.Year - src.DateOfBirth.Year));
+                .ReverseMap();
+            CreateMap<AppUser, UserForAdminDto>()
+                .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.Role.Name)))
+                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth.ToString("dd/MM/yyyy")));
         }
     }
 }

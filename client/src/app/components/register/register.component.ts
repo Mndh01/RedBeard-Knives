@@ -3,7 +3,7 @@ import { AsyncValidatorFn, FormBuilder, FormGroup, Validators } from '@angular/f
 import { Router } from '@angular/router';
 import { of, timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { AccountService } from 'src/app/services/account.service';
+import { AccountService } from 'src/app/user-profile/account.service';
 import { NgbCalendar, NgbDateAdapter, NgbDateNativeAdapter, NgbDatepicker, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -32,25 +32,25 @@ export class RegisterComponent implements OnInit {
   
   creatRegisterForm() {
     this.addressForm  = this.fb.group({
+      displayName: [null, [Validators.required]],
       country: [null, [Validators.required]],
       state: [null, [Validators.required]],
       city: [null, [Validators.required]],
       street: [null, [Validators.required]],
-      houseNumber: [null, [Validators.required]],
       zipCode: [null, [Validators.required]],
       isCurrent: true
     })
 
     this.registerForm = this.fb.group({
-      userName: [null, [Validators.required, Validators.pattern("^[a-zA-Z ]{3,25}$")]],
-      sureName: [null, [Validators.required, Validators.pattern("^[a-zA-Z ]{3,25}$")]],
+      firstName: [null, [Validators.required, Validators.pattern("^[a-zA-Z\\s]+$"), Validators.minLength(3), Validators.maxLength(25)]],
+      sureName: [null, [Validators.required, Validators.pattern("^[a-zA-Z\\s]+$"), Validators.minLength(3), Validators.maxLength(25)]],
       gender: [""],
       email: [null, 
         [Validators.required, Validators.pattern('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')]
         // ,[this.validateEmailNotTaken()]
       ],
-      password: [null, [Validators.required, Validators.minLength(4)]],
-      passwordConfirm: [null, [Validators.required, Validators.minLength(4)]],
+      password: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(20)]],
+      passwordConfirm: [null, [Validators.required, Validators.minLength(4), Validators.maxLength(20)]],
       phoneNumber: [null, [Validators.required]],
       dateOfBirth: [Date, [Validators.required]],
       address: {}
@@ -89,7 +89,7 @@ export class RegisterComponent implements OnInit {
     }    
   }
 
-  //To be reconfigured...
+  //TODO: reconfigure...
   validateEmailNotTaken(): AsyncValidatorFn {
     return control => {
       return timer(500).pipe(
@@ -108,7 +108,7 @@ export class RegisterComponent implements OnInit {
   }
 
   //#region  Date picker TS
-  @ViewChild('d1') datePopup? : NgbDatepicker;
+  @ViewChild('d') datePopup? : NgbDatepicker;
   model: NgbDateStruct;
   completed: boolean;  
   

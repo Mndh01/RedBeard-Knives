@@ -6,9 +6,13 @@ using API.Models.OrderAggregate;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using API.Data.Specifications;
+using API.Helpers;
 
 namespace API.Controllers
 {
+    [Authorize]
     public class OrdersController : BaseApiController
     {
         private readonly IOrderService _orderService;
@@ -19,7 +23,6 @@ namespace API.Controllers
             _orderService = orderService;
         }
 
-        // Set authorization for customer
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(OrderDto orderDto)
         {
@@ -35,18 +38,20 @@ namespace API.Controllers
             return Ok(order);
         }
 
-        // Set authorization for admin or customer
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<OrderToReturnDto>>> GetOrdersForUser()
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDto>>> GetOrdersForUser([FromQuery] OrderSpecParams orderParams)
         {
             var email = User.GetEmail();
 
-            var orders = await _orderService.GetOrdersForUserAsync(email);
+            orderParams.BuyerEmail = email;
 
-            return Ok(_mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDto>>(orders));
+            var orders = await _orderService.GetOrdersForUserAsync(orderParams);
+
+            var totalOrders = await _orderService.GetOrdersCountAsync(orderParams);
+
+            return Ok(new Pagination<OrderToReturnDto>(orderParams.PageIndex, orderParams.PageSize, totalOrders, _mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDto>>(orders)));
         }
 
-        // Set authorization for admin or customer
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id)
         {
@@ -59,7 +64,6 @@ namespace API.Controllers
             return _mapper.Map<Order, OrderToReturnDto>(order);
         }
 
-        // Set authorization for admin and customer
         [HttpGet("deliveryMethods")]
         public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods()
         {

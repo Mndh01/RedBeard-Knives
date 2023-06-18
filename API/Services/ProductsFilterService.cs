@@ -7,7 +7,6 @@ namespace API.Services
 {
     public class ProductsFilterService
     {
-
         public int Id { get; set; }
         public string Type { get; set; }
         public int Price { get; set; }
@@ -21,8 +20,5 @@ namespace API.Services
             InStock = inStock;
             SoldItems = soldItems;
         }
-
-
-
     }
 }

@@ -1,54 +1,50 @@
-<div class="container">
-    <div class="row" *ngIf="product">
-        <div class="col-4">
-            <h1 class="mb-2 text-center">{{product.name | titlecase}}</h1>
-            <div class="card">
-                <img src="{{product.photoUrl || '../../../assets/Old-site/images/rb_logo_metal_print.png'}}" alt="{{product.category}}" class="card-img-top img-thumbnail">
-                <div class="row card-body">
-                    <div class="col-6">
-                        <p><strong>Category: </strong>{{product.category}}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><strong>Price: </strong>{{product.price}}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><strong>In stock: </strong>{{product.inStock}}</p>
-                    </div>
-                    <div class="col-6">           
-                        <p><strong>Sold: </strong>{{product.soldItems}}</p>
-                    </div>
-                </div>
-                <div class="addToBasket">
-                    <button (click)="addToBasket()">Add to basket</button>
-                    <div>
-                        <strong class="color-exclude">Quantity: </strong>
-                        <input [(ngModel)]="quantity" type="number" min="1" max="10">
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="btn-group d-flex">
-                        <button class="btn btn-warning" routerLink="/product/edit/{{product.id}}">Edit</button>
-                        <button class="btn btn-danger" (click)="deleteProduct()">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-8">
-            <tabset class="product-tabset">
-                <tab heading="About">
-                    <h4>Description:</h4>
-                    <p>{{product.description}}</p>
-                </tab>
-                <tab heading="Photos">
-                    <ngx-gallery [options]="galleryOptions" [images]="galleryImages" 
-                        style="display: inline-block; margin-bottom: 20px;">
-                    </ngx-gallery>
-                </tab>
-                <tab heading="Comments">
-                    <p>Comments will go here</p>
-                </tab>
-                <h4></h4>
-            </tabset>
-        </div>
+<div class="container" *ngIf="product">
+  <div class="row">
+    <div class="col-md-6 d-flex justify-content-center">
+      <app-image-slide [photos]="product.photos"></app-image-slide>
     </div>
+    <div class="col-md-6">
+      <h2 class="product-name">{{ product.name | titlecase}}</h2>
+      <strong>Description</strong>
+      <p class="product-description">{{ product.description }}</p>
+      <div class="product-info">
+        <p><strong>Category:</strong> {{ product.category.name | titlecase}}</p>
+        <p><strong>Price:</strong> {{ product.price | currency}}</p>
+      </div>
+      <div class="d-flex align-items-center">
+        <i (click)="decrementItemQuantity()" class="fa fa-minus-circle text-warning mr-2"
+            style="cursor: pointer; font-size: 1.5em;"></i>
+        <span class="fw-bold" style="font-size: 1.5em;">{{quantity}}</span>
+        <i (click)="incrementItemQuantity()" [class]="" class="fa fa-plus-circle text-warning mx-2" 
+            style="cursor: pointer; font-size: 1.5em;"></i>
+      </div>
+      <div class="product-buttons">
+        <button class="btn btn-primary" (click)="addToBasket()">Add {{quantity}} item(s) to basket</button>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="product.reviews">
+    <div class="col">
+      <h3 class="section-title">Product Comments</h3>
+      <div class="product-comments d-flex justify-content-center">
+        <div class="reviews-container">
+          <div class="reviews">
+            <div *ngFor="let review of product.reviews" class="comment">
+              <h6 class="comment-date">{{ review.createdAt | date }}</h6>
+              <p class="comment-user"><strong>{{ review.authorName | titlecase }}</strong>: {{ review.body }}</p>
+            </div>
+          </div>
+          <div>
+            <div class="search-bar">
+              <input class="form-control text-input form-floating" type="text" name="search" id="search-bar" placeholder="Comment" [(ngModel)]="newComment" (keydown.enter)="addReview()">
+              <span>
+                <button class="search-submit" type="submit" title="search-bar-submit" (click)="addReview()"></button>
+                <i class="fa fa-send"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

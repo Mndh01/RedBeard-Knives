@@ -7,16 +7,11 @@ namespace API.Data.Specifications
 {
     public class ProductsWithTypesSpecification : BaseSpecification<Product>
     {
-        // public ProductsWithTypesSpecification(ProductSpecParams productParams) 
-        //     : base((p => (!productParams.CategoryId.HasValue || p.CategoryId == productParams.CategoryId)))
-        // {
-        //     SetParams(productParams);
-        // }
-
         public ProductsWithTypesSpecification(ProductSpecParams productParams, List<Expression<Func<Product, bool>>> criteria)
             : base(criteria)
         {
             AddInclude(p => p.Category);
+            AddInclude(p => p.Photos); // TODO: Must be removed after adding PhotoUrl property to Product model
             AddOrderBy(p => p.Name);
             ApplyPaging(productParams.PageSize * (productParams.PageIndex - 1), productParams.PageSize);
 
@@ -34,7 +29,7 @@ namespace API.Data.Specifications
                         AddOrderByDescending(p => p.SoldItems);
                         break;
                     default:
-                        AddOrderBy(p => p.Name);
+                        AddOrderBy(p => p.Id);
                         break;
                 }
             }
@@ -43,6 +38,8 @@ namespace API.Data.Specifications
         public ProductsWithTypesSpecification(int id) : base(x => x.Id == id)
         {
             AddInclude(p => p.Category);
+            AddInclude(p => p.Photos);
+            AddInclude(p => p.Reviews);
         }
 
     }

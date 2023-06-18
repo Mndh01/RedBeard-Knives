@@ -1,0 +1,15 @@
+<!-- <div class="modal-dialog modal-md modal-dialog-centered"> -->
+<ng-template #template class=" fade modal-dialog-centered" tabindex="-1"
+      role="dialog" aria-labelledby="dialog-child-name">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="dialog-child-name" class="modal-title pull-left"><ng-content select="#label"></ng-content></h4>
+          <button type="button" class="close btn-close" aria-label="Close" (click)="hide()">
+          </button>
+        </div>
+        <div class="modal-body">
+            <ng-content></ng-content>
+        </div>
+      </div>
+    </ng-template>
+  <!-- </div> -->

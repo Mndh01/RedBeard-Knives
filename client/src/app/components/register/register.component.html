@@ -3,18 +3,18 @@
     
     <h1 class="h3 mb-3 fw-normal">Account information: </h1>
     <div class="registerNameWrapper row">
-      <select class="col-2 color-exclude" formControlName="gender" title="Gender" label="Gender" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'black'}">
+      <select class="col-2 color-exclude" formControlName="gender" title="Gender" label="Gender" [ngStyle]="{'color': (registerForm.controls.gender.value == '') ? 'grey' : 'var(--primary-color)'}">
         <option value="" selected disabled hidden>Title</option>
         <option value="Male" >Mr.</option>
         <option value="Female">Ms.</option>
       </select>
-      <app-text-input class="col-5" id="nameInput" formControlName="userName" [label]="'Name'" [option]="'alphabet'"></app-text-input>
-      <app-text-input class="col-5" id="sureNameInput" formControlName="sureName" [label]="'Surename'" [option]="'alphabet'"></app-text-input>
+      <app-form-control-input class="col-5" id="nameInput" formControlName="firstName" [label]="'Name'" [option]="'alphabet'"></app-form-control-input>
+      <app-form-control-input class="col-5" id="sureNameInput" formControlName="sureName" [label]="'Surename'" [option]="'alphabet'"></app-form-control-input>
     </div>
 
-    <app-text-input formControlName="email" [label]="'Email Address'"></app-text-input>
-    <app-text-input formControlName="password" [label]="'Password'" [type]="'password'" (keyup)="confirmPassword()"></app-text-input>
-    <app-text-input formControlName="passwordConfirm" [label]="'Confirm password'" [type]="'password'" (keyup)="confirmPassword()"></app-text-input>
+    <app-form-control-input formControlName="email" [label]="'Email Address'"></app-form-control-input>
+    <app-form-control-input formControlName="password" [label]="'Password'" [type]="'password'" (keyup)="confirmPassword()"></app-form-control-input>
+    <app-form-control-input formControlName="passwordConfirm" [label]="'Confirm password'" [type]="'password'" (keyup)="confirmPassword()"></app-form-control-input>
     <p *ngIf="registerForm.controls.passwordConfirm.dirty && !passwordConfirmed" class="text-danger">This field must be the same as the password</p>
     
     <div>
@@ -28,11 +28,10 @@
       (keypress)="allowNumericOnly($event)"/>      
       <p *ngIf="registerForm.controls.phoneNumber.dirty && !numberIsValid" class="text-danger">Invalid Number</p>
       <div class="date-wrapper">
-        <input 
-        readonly ngbDatepicker
+        <input readonly ngbDatepicker
         class="col-12"
         formControlName="dateOfBirth"
-        #d="ngbDatepicker" 
+        #d="ngbDatepicker"
         placeholder="Date of birth" 
         (click)="!completed && d.toggle(); 
         $event.stopPropagation()"
@@ -52,17 +51,17 @@
   
   <form *ngIf="step === 2" [formGroup]="addressForm" (ngSubmit)="onSubmit()">
     <h1 class="h3 mb-3 fw-normal">Address</h1>
-    <app-text-input formControlName="country" [label]="'Country'"></app-text-input>
-    <app-text-input formControlName="state" [label]="'State'"></app-text-input>
-    <app-text-input formControlName="city" [label]="'City'"></app-text-input>
-    <app-text-input formControlName="street" [label]="'Street'"></app-text-input>
-    <app-text-input formControlName="houseNumber" [label]="'House Number'"></app-text-input>
-    <app-text-input formControlName="zipCode" [label]="'Zip Code/Postal Code'"></app-text-input>
+    <app-form-control-input formControlName="displayName" [label]="'Address display name'"></app-form-control-input>
+    <app-form-control-input formControlName="country" [label]="'Country'"></app-form-control-input>
+    <app-form-control-input formControlName="state" [label]="'State'"></app-form-control-input>
+    <app-form-control-input formControlName="city" [label]="'City'"></app-form-control-input>
+    <app-form-control-input formControlName="street" [label]="'Street'"></app-form-control-input>
+    <app-form-control-input formControlName="zipCode" [label]="'Zip Code/Postal Code'"></app-form-control-input>
     
     <div class="d-flex">
-      <button class="w-100 btn btn-lg btn-primary mr-1" style="padding-right: 30px;" (click)="moveStep(-1)" type="button">&larr; Previous</button>
+      <button class="w-100 btn btn-primary mr-1" style="padding-right: 30px;" (click)="moveStep(-1)" type="button">&larr; Previous</button>
       <button [disabled]="addressForm.invalid || registerForm.invalid"
-      class="w-100 btn btn-lg btn-primary" type="submit" >Register</button>
+      class="w-100 btn btn-primary" type="submit" >Register</button>
     </div>
   </form>
 </div>

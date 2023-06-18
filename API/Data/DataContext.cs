@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Linq;
 using System.Reflection;
-
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace API.Data
 {
@@ -22,10 +23,19 @@ namespace API.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Models.Address> Addresses { get; set; }
-        public DbSet<UserAddresses> UserAddresses { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
+        public override int SaveChanges()
+        {
+            TrimStringProperties();
+            return base.SaveChanges();
+        }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            TrimStringProperties();
+            return base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -68,19 +78,42 @@ namespace API.Data
                 .IsRequired();
             
             builder.Entity<AppUser>()
-                .HasMany(u => u.UserAddresses)
+                .HasMany(u => u.Addresses)
                 .WithOne(ua => ua.User)
                 .HasForeignKey(ua => ua.UserId)
                 .IsRequired();
 
-            builder.Entity<Models.Address>()
-                .HasMany(a => a.UserAddresses)
-                .WithOne(ua => ua.Address)
-                .HasForeignKey(ua => ua.AddressId)
+            builder.Entity<AppUser>()
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
                 .IsRequired();
 
-            builder.Entity<UserAddresses>()
-                .HasKey(k => new {k.AddressId, k.UserId});
+            builder.Entity<Product>()
+                .HasMany(p => p.Photos)
+                .WithOne(p => p.Product)
+                .IsRequired();
+            
+            builder.Entity<Photo>()
+                .HasOne(p => p.Product)
+                .WithMany(p => p.Photos)
+                .HasForeignKey(p => p.ProductId)
+                .IsRequired();
+        }
+        private void TrimStringProperties()
+        {
+            var stringProperties = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .SelectMany(e => e.Properties)
+                .Where(p => p.Metadata.ClrType == typeof(string));
+
+            foreach (var property in stringProperties)
+            {
+                if (property.CurrentValue is string value)
+                {
+                    property.CurrentValue = value.Trim();
+                }
+            }
         }
     }
 }

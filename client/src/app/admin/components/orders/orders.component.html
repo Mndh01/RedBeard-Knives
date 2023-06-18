@@ -1,0 +1,44 @@
+<div class="container-fluid">
+    <ng-container class="row">
+        <div class="d-flex flex-wrap justify-content-between align-items-center pb-2">
+            <div class="d-flex flex-wrap flex-sm-nowrap mr-0 align-items-center">
+                <!-- <ng-select [items]="dropdownOptions" [(ngModel)]="selectedOption" [searchable]="true" [searchFn]="customSearchFn">
+                    <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                      {{ item }}
+                    </ng-template>
+                  </ng-select> -->
+                <!-- <input (keyup)="onBuyerChange($event)" class="form-control text-input mr-2 mb-2" style="min-width: 150px;" type="text" placeholder="Search" #search> -->
+                <!-- <div class="dropdown mb-2">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{selectedStatus}}
+                    </button>
+                    <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
+                            <li class="list-group-item slide-text-on-hover" *ngFor="let status of orderStatus; index as i">
+                                <a class="dropdown-item" (click)="onStatusChange(status)">{{status}}</a>
+                            </li>
+                    </ul>
+                </div> -->
+            <!-- Example split danger button -->
+            <!-- <div class="btn-group dropleft">
+                <input type="text" class="text-input mb-0">
+                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropright</span>
+                </button>
+                <div class="dropdown-menu">
+                  <div class="dropdown-item">sss</div>
+                  <div class="dropdown-item">sss</div>
+                </div>
+              </div>
+                <button (click)="onReset()" type="reset" class="btn btn-outline-secondary ml-2 mb-2">Reset</button> -->
+            </div>
+            <app-paging-header [pagination]="pagination"></app-paging-header>
+        </div>
+    </ng-container>
+    <div class="table-responsive">
+        <app-generic-table [data]="orders" #table></app-generic-table>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center py-2" *ngIf="pagination && pagination.count > 0">
+    <app-pager [pagination]="pagination" (pageChanged)="onPageChanged($event)"></app-pager>
+</div>

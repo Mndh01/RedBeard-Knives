@@ -1,6 +1,7 @@
 @import "~/src/styles.scss";
 
 * {
+    -webkit-user-select: none;
     user-select: none;
 }
 @keyframes fade {
@@ -53,7 +54,7 @@
         width: 10%; max-width: 50px; min-width: 40px;
         height: 20%; max-height: 50px; min-height: 40px;
         border-radius: 50%;
-        background-color: $secondary-color;
+        background-color: var(--dark-background);
         background-image: none;
         color: white;
         font-size: 2rem;

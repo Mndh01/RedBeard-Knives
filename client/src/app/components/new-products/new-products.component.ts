@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CarouselConfig } from 'ngx-bootstrap/carousel';
-import { Product } from 'src/app/models/Product';
-import { ProductsService } from 'src/app/services/products.service';
+import { Product } from 'src/app/shop/models/Product';
+import { ProductsService } from 'src/app/shop/products.service';
 import { OwlOptions } from 'ngx-owl-carousel-o';
 import { timer } from 'rxjs';
 

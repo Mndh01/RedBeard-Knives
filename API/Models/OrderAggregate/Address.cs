@@ -5,20 +5,19 @@ namespace API.Models.OrderAggregate
             {
             }
 
-            public Address(string firstName, string lastName, string street, 
-                  string city, string state, string country, string zipCode)
+            public Address(string displayName, string street, string city,
+            string state, string country, string zipCode)
             {
-                  FirstName = firstName;
-                  LastName = lastName;
+                  DisplayName = displayName;
                   Street = street;
                   City = city;
                   State = state;
                   Country = country;
                   ZipCode = zipCode;
+                  FullAddress = country + state + city + street + zipCode;
             }
-
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
+            public string DisplayName { get; set; }
+            public string FullAddress { get; set; }
             public string Street { get; set; }
             public string City { get; set; }
             public string State { get; set; }

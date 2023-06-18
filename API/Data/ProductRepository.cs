@@ -81,15 +81,15 @@ namespace API.Data
             return false;
         }
 
-        public async Task<PagedList<ItemDto>> GetItemsAsync(ProductParams productParams, string category, int price, int inStock, int soldItems)
+        public async Task<PagedList<ProductDto>> GetItemsAsync(ProductParams productParams, string category, int price, int inStock, int soldItems)
         {
             var query = _context.Products
                 .Include(p => p.Category)
-                .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
                 .AsNoTracking();
 
             if (!string.IsNullOrEmpty(category))
-                query = query.Where(p => p.Category == category);
+                query = query.Where(p => p.Category.Name == category);
 
             if (price != -1)
                 query = query.Where(p => p.Price <= price);
@@ -100,24 +100,24 @@ namespace API.Data
             if (soldItems != -1)
                 query = query.Where(p => p.SoldItems == soldItems);
 
-            return await PagedList<ItemDto>.CreateAsync(query, productParams.PageNumber, productParams.PageSize);
+            return await PagedList<ProductDto>.CreateAsync(query, productParams.PageNumber, productParams.PageSize);
         }
 
-        public async Task<ItemDto> GetItemAsync(int id)
+        public async Task<ProductDto> GetItemAsync(int id)
         {
             return await _context.Products
                 .Where(product => product.Id == id)
                 .Include(p => p.Category)
-                .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
         }
         
-        public async Task<ItemDto> GetItemByNameAsync(string name)
+        public async Task<ProductDto> GetItemByNameAsync(string name)
         {
             return await _context.Products
             .Where(product => product.Name == name)
             .Include(p => p.Category)
-            .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         }
 

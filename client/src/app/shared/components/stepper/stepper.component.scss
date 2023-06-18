@@ -1,0 +1,9 @@
+button.nav-link {
+    background: var(--dark-background);
+    border-radius: 0;
+    border: none !important;
+
+    &:disabled:not(.active) {
+        background: var(--dark-background);
+    }
+}

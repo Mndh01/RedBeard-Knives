@@ -5,13 +5,17 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using API.Data.Specifications;
 using API.DTOs;
+using API.DTOs.Admin;
 using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
 using API.Models;
 using AutoMapper;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -20,13 +24,16 @@ namespace API.Controllers
         private readonly IPhotoService _photoService;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public ProductsController (IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper) 
+        private readonly IResponseCacheService _responseCacheService;
+        public ProductsController (IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper, IResponseCacheService responseCacheService) 
         {
+            _responseCacheService = responseCacheService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _photoService = photoService;
         }
         
+        [Cached(600)]
         [HttpGet("{id}", Name = "GetProduct")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {   
@@ -34,14 +41,12 @@ namespace API.Controllers
 
             var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
 
-            if (product != null)
-            {
-                return Ok(product);
-            }
+            if (product != null) return Ok(product);
 
             return BadRequest("Couldn't find product...");
         }
 
+        [Cached(600)]
         [HttpGet]
         public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams productParams) 
         {
@@ -60,31 +65,15 @@ namespace API.Controllers
 
             var products = await _unitOfWork.Repository<Product>().ListAsync(spec);
 
-            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ItemDto>>(products);
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDto>>(products);
 
-            if (products.Count > 0) 
-            { 
-                return Ok(new Pagination<ItemDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
-            }
+            return Ok(new Pagination<ProductDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
 
-            return BadRequest("Couldn't find any products...");
-
-            // Using normal repository below
-            // var products = await _productRepository.GetItemsAsync(productParams, category, price, inStock, soldItems);
-
-            // if (products != null) {
-            //     Response.AddPaginationHeader(new PaginationHeader(products.CurrentPage, 
-            //     products.PageSize, products.TotalCount, products.TotalPages));
-
-            //     return Ok(value: products);
-            // }
-            
-            
-            // return BadRequest("Couldn't find products with such properties...");
         }
 
+        [Cached(600)]
         [HttpGet("categories")]
-        public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategories() 
+        public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategories()
         {
             var categories = await _unitOfWork.Repository<ProductCategory>().ListAllAsync();
 
@@ -93,33 +82,41 @@ namespace API.Controllers
             return BadRequest("Couldn't find categories...");
         }
         
-        // Set authorization only for admin
+        [Authorize(Policy="RequireAdminRole")]
         [HttpPost("add-category")]
         public async Task<ActionResult<ProductCategory>> AddCategory(ProductCategory newCategory)
         {
-            BaseSpecification<ProductCategory> spec = new BaseSpecification<ProductCategory>(pc => pc.Name == newCategory.Name.ToLower());
+            BaseSpecification<ProductCategory> spec = new BaseSpecification<ProductCategory>(pc => pc.Name == newCategory.Name.ToLower().Trim());
             
             var exists = await _unitOfWork.Repository<ProductCategory>().GetEntityWithSpec(spec);
 
             if(exists != null) { return BadRequest("Category already exists..."); }
             
-            var category = new ProductCategory { Name = newCategory.Name.ToLower() };
+            var category = new ProductCategory { Name = newCategory.Name.ToLower().Trim() };
 
             _unitOfWork.Repository<ProductCategory>().Add(category);
 
-            if (await _unitOfWork.Complete() > 0) return Ok(category);
+            if (await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);   
+                
+                return Ok(category);
+            }
 
             return BadRequest("Couldn't add category...");
         }
 
-        // Set authorization only for admin
+        [DisableRequestSizeLimit]
+        [Authorize(Policy="RequireAdminRole")]
         [HttpPost("add-product")]
-        public async Task<ActionResult<Product>> AddProduct(Product product) 
+        public async Task<ActionResult<Product>> AddProduct([FromForm] ProductDto product, IFormFile[] files) 
         {
-            var newProduct  = _mapper.Map<Product>(product);
-            
-            newProduct.Name = newProduct.Name.ToLower();
+            product.Category = JsonConvert.DeserializeObject<ProductCategory>(product.CategoryJson);
 
+            await SetProductPhotos(product, files);
+
+            Product newProduct = _mapper.Map<Product>(product);
+            
             BaseSpecification<Product> spec = new BaseSpecification<Product>(p => p.Name == product.Name.ToLower());
 
             newProduct.Category = await _unitOfWork.Repository<ProductCategory>().GetByIdAsync(product.Category.Id);
@@ -128,56 +125,145 @@ namespace API.Controllers
 
             _unitOfWork.Repository<Product>().Add(newProduct);
 
-            if(await _unitOfWork.Complete() > 0) return Created(new Uri($"{Request.Path}/{newProduct.Id}", UriKind.Relative) ,newProduct);
+            if(await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);
+
+                return Created(new Uri($"{Request.Path}/{newProduct.Id}", UriKind.Relative) ,newProduct);
+            }
+
+            foreach (var photo in product.Photos) 
+            {
+                await _photoService.DeletePhotoAsync(photo.PublicId);
+            }
 
             return BadRequest("Failed to add product");               
         }
         
-        // Set authorization only for admin
-        [HttpPost("add-photo")]
-        public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file, int id)
+        [Authorize(Policy="RequireAdminRole")]
+        [HttpPost("add-photos")]
+        public async Task<ActionResult<List<PhotoDto>>> AddPhotos([FromForm] int productId, IFormFile[] files)
         {
-            
-            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
+            var spec = new ProductsWithTypesSpecification(productId);
 
-            var result = await _photoService.AddPhotoAsync(file);
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
 
-            if (result.Error != null) return BadRequest(result.Error.Message);
+            List<ImageUploadResult> results = await SetProductPhotos(_mapper.Map<ProductDto>(product), files);
 
-            var photo = new Photo 
+            List<Photo> photos = new List<Photo>();
+
+            foreach (var result in results) {
+
+                if (result.Error != null) { continue; };
+
+                var photo = new Photo 
+                {
+                    Url = result.SecureUrl.AbsoluteUri,
+                    PublicId = result.PublicId
+                };
+
+                if (product.Photos.Count == 0) 
+                {
+                    photo.IsMain = true;
+                }
+
+                photos.Add(photo);
+
+                product.Photos.Add(photo);
+            }
+
+            if (await _unitOfWork.Complete() > 0) 
             {
-                Url = result.SecureUrl.AbsoluteUri,
-                PublicId = result.PublicId
+                await RemoveCache(Request);
+
+                return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<List<PhotoDto>>(photos));
+            }
+
+            return BadRequest("Failed to add photos..");
+        }
+
+        [Authorize]
+        [HttpPost("add-review")]
+        public async Task<ActionResult<ReviewDto>> AddReview(ReviewDto reviewDto) 
+        {
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(reviewDto.ProductId);
+            
+            var review = new Review 
+            {
+                AuthorId = User.GetUserId(),
+                AuthorName = User.GetUsername(),
+                Body = reviewDto.Body,
+                CreatedAt = DateTime.Now,
+                ProductId = product.Id,
             };
 
-            if (product.Photos.Count == 0) 
+            product.Reviews.Add(review);
+
+            if (await _unitOfWork.Complete() > 0) 
             {
-                photo.IsMain = true;
+                await RemoveCache(Request);
+
+                return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<ReviewDto>(review));
+            }
+
+            return BadRequest("Failed to add comment..");
         }
 
-            product.Photos.Add(photo);
+        [Authorize]
+        [HttpDelete("delete-review")]
+        public async Task<ActionResult> DeleteReview(int ProductId, int ReviewId)
+        {
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(ProductId);
 
-            if (await _unitOfWork.Complete() > 0) return CreatedAtRoute("GetProduct", new {id = product.Id}, _mapper.Map<PhotoDto>(photo));
+            var review = product.Reviews.FirstOrDefault(review => review.Id == ReviewId);
 
-            return BadRequest("Failed to add the photo..");
+            if (review == null) return NotFound();
+
+            product.Reviews.Remove(review);
+
+            if (await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);
+
+                return NoContent();
+            }
+
+            return BadRequest("Failed to delete the comment..");
         }
 
-        // Set authorization only for admin
+        [Authorize(Policy="RequireAdminRole")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {   
+            var spec = new ProductsWithTypesSpecification(id);
+
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+
+            foreach (Photo photo in product.Photos) {   
+               await _photoService.DeletePhotoAsync(photo.PublicId);
+            }
+
             _unitOfWork.Repository<Product>().Delete(new Product {Id = id});
 
-            if (await _unitOfWork.Complete() > 0) return NoContent();
+            if (await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);
+
+                return NoContent();
+            }
             
             return BadRequest("Failed to remove product..");
         }
 
-        // Set authorization only for admin
+        [Authorize(Policy="RequireAdminRole")]
         [HttpDelete("delete-photo")]
         public async Task<ActionResult<Product>> DeletePhoto(int ProductId, int PhotoId)
         {
-            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(ProductId);
+            var spec = new ProductsWithTypesSpecification(ProductId);
+
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
+
+            if(product == null) return NotFound("Product not found");
 
             var photo = product.Photos.FirstOrDefault(Photo => Photo.Id == PhotoId);
 
@@ -192,12 +278,17 @@ namespace API.Controllers
             
             product.Photos.Remove(photo);
 
-            if (await _unitOfWork.Complete() > 0) return NoContent();
+            if (await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);
+
+                return NoContent();
+            }
 
             return BadRequest("Failed to delete the photo..");
         }
         
-        // Set authorization only for admin
+        [Authorize(Policy="RequireAdminRole")]
         [HttpPut]
         public async Task<ActionResult> UpdateProduct(ProductUpdateDto productUpdateDto) 
         {
@@ -211,16 +302,23 @@ namespace API.Controllers
 
             _unitOfWork.Repository<Product>().Update(product);
 
-            if (await _unitOfWork.Complete() > 0) return NoContent();
+            if (await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);
+
+                return NoContent();
+            }
 
             return BadRequest("Failed to update product..");
         }
 
-        // Set authorization only for admin
+        [Authorize(Policy="RequireAdminRole")]
         [HttpPut("set-main-photo")]
         public async Task<ActionResult> SetMainPhoto(int ProductId, int PhotoId)
         {
-            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(ProductId);
+            var spec = new ProductsWithTypesSpecification(ProductId);
+
+            var product = await _unitOfWork.Repository<Product>().GetEntityWithSpec(spec);
 
             var photo = product.Photos.FirstOrDefault(photo => photo.Id == PhotoId);
 
@@ -232,9 +330,52 @@ namespace API.Controllers
             
             photo.IsMain = true;
 
-            if (await _unitOfWork.Complete() > 0) return NoContent();
+            if (await _unitOfWork.Complete() > 0) 
+            {
+                await RemoveCache(Request);
+
+                return NoContent();
+            }
 
             return BadRequest("Failed to set main photo..");
+        }
+
+        private async Task RemoveCache(HttpRequest request)
+        {
+            var cacheKey = _responseCacheService.GenerateCacheKeyFromRequest(request);
+
+            await _responseCacheService.DeleteCachedResponseAsync();
+        }
+
+        private async Task<List<ImageUploadResult>> SetProductPhotos(ProductDto product, IFormFile[] files) {
+            List<ImageUploadResult> results = new List<ImageUploadResult>();
+            bool newProduct = product.Id == 0;
+            if (files.Any()) 
+            {
+                
+                foreach (var file in files) 
+                {
+                    var result = await _photoService.AddPhotoAsync(file);
+
+                    results.Add(result);
+
+                    if (result.Error != null) { continue; };
+
+                    var photo = new PhotoDto 
+                    {
+                        Url = result.SecureUrl.AbsoluteUri,
+                        PublicId = result.PublicId
+                    };
+
+                    product.Photos.Add(photo);
+                }
+
+                if (newProduct) product.Photos.FirstOrDefault().IsMain = true;
+
+                if (product.PhotoUrl == null) product.PhotoUrl = product.Photos.FirstOrDefault().Url;
+            }
+
+            return results;
         }
     }
 }

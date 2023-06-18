@@ -1,0 +1,53 @@
+<div class="row">
+    <div class="table-responsive">
+        <button class="btn btn-outline" (click)="onShowModal()">Add Address</button>
+        <table class="table table-hover content-table" *ngIf="addresses?.length > 0">
+            <thead class="thead-light">
+                <tr>
+                    <th>Display Name</th>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>City</th>
+                    <th>Street</th>
+                    <th>Zip Code</th>
+                    <th>Active</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="td-valign-center" *ngFor="let address of addresses">
+                    <td>{{address.displayName | titlecase}}</td>
+                    <td>{{address.country | titlecase}}</td>
+                    <td>{{address.state | titlecase}}</td>
+                    <td>{{address.city | titlecase}}</td>
+                    <td>{{address.street | titlecase}}</td>
+                    <td>{{address.zipCode}}</td>
+                    <td>{{address.isCurrent ? 'Active' : 'No'}}</td>
+                    <td><button class="btn btn-outline" (click)="setCurrentAddress(address.id)" [disabled]="address?.isCurrent">Set Active</button></td>
+                    <td><i class="fa fa-trash fs-4 hover-pointer" (click)="deleteAddress(address.id)"></i></td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="addresses?.length == 0" class="text-danger text-center">There are no addresses to be displayed</div>
+    </div>
+</div>
+<!-- <div class="d-flex justify-content-center py-2" *ngIf="pagination && pagination.count > 0">
+    <app-pager [pagination]="pagination" (pageChanged)="onPageChanged($event)"></app-pager>
+</div> -->
+
+<!-- Address add modal -->
+<app-modal #newAddressModal (onHide)="onModalHide()">
+    <div id="label">Add New Address</div>
+    <form [formGroup]="addressForm" (ngSubmit)="onSubmit()">
+        <app-form-control-input formControlName="displayName" [label]="'Address display name'"></app-form-control-input>
+        <app-form-control-input formControlName="country" [label]="'Country'"></app-form-control-input>
+        <app-form-control-input formControlName="state" [label]="'State'"></app-form-control-input>
+        <app-form-control-input formControlName="city" [label]="'City'"></app-form-control-input>
+        <app-form-control-input formControlName="street" [label]="'Street'"></app-form-control-input>
+        <app-form-control-input formControlName="zipCode" [label]="'Zip Code/Postal Code'"></app-form-control-input>
+        
+        <div class="d-flex">
+          <button [disabled]="addressForm.invalid"
+          class="w-100 btn btn-lg btn-primary" type="submit" >Add Address</button>
+        </div>
+      </form>
+</app-modal>

@@ -2,7 +2,7 @@ using System.Runtime.Serialization;
 
 namespace API.Models.OrderAggregate
 {
-      public enum OrderStatus
+    public enum OrderStatus
     {
         [EnumMember(Value = "Pending")]
         Pending,
@@ -15,4 +15,5 @@ namespace API.Models.OrderAggregate
         [EnumMember(Value = "Canceled")]
         Canceled
     }
+
 }

@@ -1,0 +1,73 @@
+<div class="container"  *ngIf="product">
+  <div class="row justify-content-center">
+      <div class="d-flex flex-column align-items-center col-12 col-xl-4 slide-container">
+          <app-image-slide [photos]="product.photos" class="mb-2"></app-image-slide>
+          <div class="color-exclude d-none d-xl-flex justify-content-center col-12">
+            <button class="btn btn-primary col-5" (click)="updateProduct()">Save <i class="fa fa-check"></i></button>
+            <button class="btn btn-secondary col-5 ml-2" (click)="deleteProduct()">Delete <i class="fa fa-trash"></i></button>
+          </div>
+      </div>
+      <div class="col-12 col-xl-8">
+          <tabset class="product-tabset">
+              <tab heading="About">
+                <form #editForm="ngForm" id="editForm" class="row">
+                  <h4>Product Name</h4>
+                  <app-form-control-input [formControl]="getFormControl('name')" [label]="'Product Name'"></app-form-control-input>
+                  <h4>Price</h4>
+                  <app-form-control-input [formControl]="getFormControl('price')" [label]="'Price'" type="number"></app-form-control-input>
+                  <h4>Stock</h4>
+                  <app-form-control-input [formControl]="getFormControl('inStock')" [label]="'In Stock'" type="number"></app-form-control-input>
+                  <h4>Sold Items</h4>
+                  <app-form-control-input [formControl]="getFormControl('soldItems')" [label]="'Sold items'" type="number"></app-form-control-input>
+                  <div class="my-2">
+                    <div class="dropdown">
+                      <h4 class="d-inline-block mr-2">Product Category</h4>
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{getCategoryGroup().get('name').value}}
+                      </button>
+                      <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
+                        <li class="list-group-item slide-text-on-hover" *ngFor="let category of categories" (click)="setCategory(category)">{{category.name}}</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <h4 class="mt-2">Description</h4>
+                  <textarea class="form-control" [formControl]="getFormControl('description')" rows="4" placeholder="Price"></textarea>
+                  <div class="d-flex d-xl-none row mt-2">
+                    <button class="btn btn-primary col-5" (click)="updateProduct()">Save <i class="fa fa-check"></i></button>
+                    <button class="btn btn-secondary col-5 ml-2" (click)="deleteProduct()">Delete <i class="fa fa-trash"></i></button>
+                  </div>
+                </form>
+              </tab>
+              <tab heading="Edit Photos" >
+                <app-photo-editor [product]="product"></app-photo-editor>
+            </tab>
+            <tab heading="Reviews">
+              <div class="row" *ngIf="product.reviews">
+                <div class="col">
+                  <h3 class="section-title">Product Comments</h3>
+                  <div class="product-comments d-flex justify-content-center">
+                    <div class="reviews-container">
+                      <div class="reviews">
+                        <div *ngFor="let review of product.reviews" class="comment">
+                          <h6 class="comment-date">{{ review.createdAt | date }}</h6>
+                          <p class="comment-user px-2"><strong>{{ review.authorName | titlecase }}</strong>: {{ review.body }}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="search-bar">
+                          <input class="form-control text-input form-floating" type="text" name="search" id="search-bar" placeholder="Comment" [(ngModel)]="newComment" (keydown.enter)="addReview()">
+                          <span>
+                            <button class="search-submit" type="submit" title="search-bar-submit" (click)="addReview()"></button>
+                            <i class="fa fa-send"></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </tab>
+          </tabset>
+      </div>
+  </div>
+</div>

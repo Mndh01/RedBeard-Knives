@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from 'src/app/models/Product';
-import { ProductsService } from 'src/app/services/products.service';
+import { Product } from 'src/app/shop/models/Product';
+import { ProductsService } from 'src/app/shop/products.service';
 
 @Component({
   selector: 'app-products',
@@ -33,6 +33,7 @@ export class ProductsComponent implements OnInit {
   getCategory(category:string){
     this.category = category;      
   }
+  
   checkPrice(){
     if (this.inputPrice > 0 && this.inputPrice < Number.POSITIVE_INFINITY){
       this.price = this.inputPrice;

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Pagination } from 'src/app/models/Pagination';
+import { Pagination } from 'src/app/shared/models/Pagination';
 
 @Component({
   selector: 'app-pager',
@@ -7,7 +7,7 @@ import { Pagination } from 'src/app/models/Pagination';
   styleUrls: ['./pager.component.scss']
 })
 export class PagerComponent implements OnInit {
-  @Input() pagination: Pagination;
+  @Input() pagination?: Pagination;
   @Output() pageChanged = new EventEmitter<number>();
   rotate = false; maxSize = 3; status = "ON";
   constructor() { }

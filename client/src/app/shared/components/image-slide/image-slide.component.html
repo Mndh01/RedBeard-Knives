@@ -1,0 +1,8 @@
+<div class="d-flex flex-column align-items-center justify-content-center ">
+    <div class="slide-container" *ngIf="photos.length > 0">
+        <div class="slide-btn" [ngStyle]="{'left': '0'}" (click)="previousPhoto()"><i class="fa fa-arrow-left"></i></div>
+        <img src="{{photos[photoIndex].url}}" alt="Image">
+        <div class="slide-btn" [ngStyle]="{'right': '0'}" (click)="nextPhoto()"><i class="fa fa-arrow-right"></i></div>
+    </div>
+    <strong>{{photoIndex + 1}} / {{photos.length}}</strong>
+</div>

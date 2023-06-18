@@ -1,0 +1,17 @@
+<div class="form-group">
+  <input 
+    class="form-control text-input form-floating"
+    [class.is-invalid]="ngControl.touched && ngControl.invalid"
+    type={{type}}
+    [attr.disabled]="isDisabled ? 'disabled' : null"
+    [formControl]="ngControlControl"
+    placeholder={{label}}
+    (keypress)="inputOption($event)"
+    (change)="getValidationErrors()"
+    (keydown)="singleWhitespaceBetweenWords($event)"
+    [autocomplete]="autoComplete ? '' : 'none'">
+  <div *ngIf="ngControl.control.errors?.required && ngControl.touched" class="invalid-feedback">Please fill the {{label}} field</div>
+  <div *ngIf="ngControl.control.errors?.minlength && ngControl.touched" class="invalid-feedback">This field must be at least {{errors.get("minlength")?.requiredLength}} characters long</div>
+  <div *ngIf="ngControl.control.errors?.maxlength && ngControl.touched" class="invalid-feedback">This field must be at most {{errors.get("maxlength")?.requiredLength}} characters long</div>
+  <div *ngIf="ngControl.control.errors?.pattern && ngControl.touched" class="invalid-feedback">This field doesn't accept the pattern you've entered</div>
+</div>

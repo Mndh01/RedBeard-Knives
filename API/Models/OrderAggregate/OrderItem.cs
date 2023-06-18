@@ -1,6 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace API.Models.OrderAggregate
 {
-      public class OrderItem : BaseEntity
+    public class OrderItem : BaseEntity
     {
         public OrderItem()
         {
@@ -16,5 +18,6 @@ namespace API.Models.OrderAggregate
         public ProductItemOrdered ItemOrdered { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+
     }
 }

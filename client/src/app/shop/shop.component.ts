@@ -1,9 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Product } from 'src/app/models/Product';
-import { ProductsService } from 'src/app/services/products.service';
-import { PaginatedResult, Pagination } from '../models/Pagination';
-import { ProductCategory } from '../models/ProductCategory';
-import { ShopParams } from '../models/ShopParams';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Product } from 'src/app/shop/models/Product';
+import { ProductsService } from 'src/app/shop/products.service';
+import { PaginatedResponse, Pagination } from '../shared/models/Pagination';
+import { ProductCategory } from './models/ProductCategory';
+import { ShopParams } from './models/ShopParams';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-shop',
@@ -13,11 +14,13 @@ import { ShopParams } from '../models/ShopParams';
 
 export class ShopComponent implements OnInit {
   @ViewChild('search', {static: true}) searchTerm: ElementRef<HTMLInputElement>;
-  @ViewChild('sortSelect', {static: true}) SortSelect: ElementRef<HTMLSelectElement>;
+  @ViewChild('sortSelect', {static: false}) sortSelect?: ElementRef<HTMLSelectElement>;
+  @ViewChild('mobileSortSelect', {static: false}) mobileSortSelect?: ElementRef<HTMLSelectElement>;
+  @ViewChild('mobileCategorySelect', {static: false}) mobileCategorySelect?: ElementRef<HTMLSelectElement>;
   products: Product[];
   categories: ProductCategory[];
-  shopParams: ShopParams = new ShopParams();
-  pagination: Pagination;
+  shopParams: ShopParams;
+  pagination: Pagination = {} as Pagination;
   inputPrice: number;
   sortOptions = [
     { name: 'Alphabetical', value: 'name' },
@@ -26,7 +29,9 @@ export class ShopComponent implements OnInit {
     { name: 'Top selling', value: 'topSells' },
   ];
   
-  constructor(private productService: ProductsService) { }
+  constructor(private productService: ProductsService, private toastr: ToastrService) { 
+    this.shopParams = this.productService.getShopParams();
+  }
 
   ngOnInit() {
     this.setPageSize();
@@ -35,12 +40,16 @@ export class ShopComponent implements OnInit {
   }
 
   getProducts() {
-    this.productService.getProducts(this.shopParams).subscribe({
-      next: (response: PaginatedResult<Product[]>) => {
-        if(response.data && response.pagination) {
+    this.productService.getProducts().subscribe({
+      next: (response: PaginatedResponse<Product[]>) => {
           this.products = response.data;
-          this.pagination = response.pagination;
-        }
+          this.pagination.count = response.count;
+          this.pagination.pageIndex = response.pageIndex;
+          this.pagination.pageSize = response.pageSize;
+          this.pagination.totalPages = Math.ceil(response.count / response.pageSize);
+      },
+      error: (error) => {
+        this.toastr.error(error);
       }
     });
   }
@@ -49,39 +58,54 @@ export class ShopComponent implements OnInit {
     this.productService.getCategories().subscribe(Categories => {
       this.categories = [{id: 0, name: "All"}, ...Categories];
     }, error => {
-      console.log(error); // TODO: Change this log to a toastr popup
+      this.toastr.error(error.message);
     })      
   }
 
   onPageChanged(event: any) {
-    if (this.shopParams.pageIndex !== event){
-      this.shopParams.pageIndex = event;
-      this.pagination.pageIndex = this.shopParams.pageIndex;
+    const params = this.productService.getShopParams();
+    if (params.pageIndex !== event){
+      params.pageIndex = event;
+      this.pagination.pageIndex = params.pageIndex;
+      this.productService.setShopParams(params);
+      this.shopParams = params;
       this.getProducts();
     }
   }
 
   onCategorySelect(categoryId: number) {
-    if (this.shopParams.categoryId !== categoryId) {
-      this.shopParams.categoryId = categoryId;
-      this.shopParams.pageIndex = 1;
+    const params = this.productService.getShopParams();
+    if (params.categoryId !== categoryId) {
+      params.categoryId = categoryId;
+      params.pageIndex = 1;
+      this.productService.setShopParams(params);
+      this.shopParams = params;
       this.getProducts(); 
     }
   }
 
   onSortSelect(sort: string) {
-    this.shopParams.sort = sort;
+    const params = this.productService.getShopParams();
+    params.sort = sort;
+    this.productService.setShopParams(params);
+    this.shopParams = params;
     this.getProducts();
   }
 
   onSearch() {
-    this.shopParams.search = this.searchTerm.nativeElement.value;
+    const params = this.productService.getShopParams();
+    this.shopParams.search = this.searchTerm?.nativeElement.value;
+    params.pageIndex = 1;
+    this.productService.setShopParams(params);
+    this.shopParams = params;
     this.getProducts();
   }
 
   onReset() {
     this.searchTerm.nativeElement.value = '';
-    this.SortSelect.nativeElement.value = 'name';
+    this.sortSelect.nativeElement.value = 'name';
+    this.mobileSortSelect.nativeElement.value = 'name';
+    this.mobileCategorySelect.nativeElement.value = '0';
     this.shopParams = new ShopParams();
     this.setPageSize();
     this.getProducts();
@@ -89,6 +113,7 @@ export class ShopComponent implements OnInit {
 
   private setPageSize() {
     let width: number = window.innerWidth;
+    this.shopParams.pageIndex = 1;
     switch(true) 
     {
       case (width >= 575 && width <= 767):
@@ -107,5 +132,6 @@ export class ShopComponent implements OnInit {
         this.shopParams.pageSize = 5;
         break;
     }
+    this.productService.setShopParams(this.shopParams);
   }
 }

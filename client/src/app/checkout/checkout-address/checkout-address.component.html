@@ -1,0 +1,38 @@
+<div class="mt-4" *ngIf="checkoutForm" [formGroup]="checkoutForm">
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>Shipping adress</h4>
+        <select class="mb-2" name="addresses" title="addresses" (change)="changeSelectedAddress($event.target.value)" *ngIf="addresses">
+            <option [selected]="address.isCurrent" *ngFor="let address of addresses" [ngValue]="address">{{address.displayName | titlecase}}</option>
+            <option value="add">Add..</option>
+        </select>
+    </div>
+    <div class="row" formGroupName="addressForm">
+        <div class="form-group col-6" [hidden]="disableInput">
+            <app-form-control-input [isDisabled]="disableInput" [label]="'Display name'" formControlName="displayName"></app-form-control-input>
+        </div>
+        <div class="form-group col-6">
+            <app-form-control-input [isDisabled]="disableInput" [label]="'Country'" formControlName="country"></app-form-control-input>
+        </div>
+        <div class="form-group col-6">
+            <app-form-control-input [isDisabled]="disableInput" [label]="'State'" formControlName="state"></app-form-control-input>
+        </div>
+        <div class="form-group col-6">
+            <app-form-control-input [isDisabled]="disableInput" [label]="'City'" formControlName="city"></app-form-control-input>
+        </div>
+        <div class="form-group col-6">
+            <app-form-control-input [isDisabled]="disableInput" [label]="'Street'" formControlName="street"></app-form-control-input>
+        </div>
+        <div class="form-group col-6">
+            <app-form-control-input [isDisabled]="disableInput" [label]="'Zip code'" formControlName="zipCode"></app-form-control-input>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between flex-row mb-5">
+        <button class="btn btn-outline-primary" routerLink="/">
+            <i class="fa fa-angle-left"></i> Back to checkout
+        </button>
+        <button [disabled]="checkoutForm?.get('addressForm')?.invalid" class="btn btn-primary" cdkStepperNext (click)="addAddressIfNew()">
+            Go to delivery <i class="fa fa-angle-right"></i> 
+        </button>
+    </div>
+</div>

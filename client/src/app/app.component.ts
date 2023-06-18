@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BasketService } from './basket/basket.service';
-import { AccountService } from './services/account.service';
+import { AccountService } from './user-profile/account.service';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +22,9 @@ export class AppComponent implements OnInit{
     const token = localStorage.getItem('token');
     if (token) {
       this.accountService.loadCurrentUser(token).subscribe(() => {
-        console.log('loaded user');
+        console.log('loaded user'); // TODO: remove
       }, error => {
-        console.log(error);
+        console.log(error); // TODO: replace with toastr (notification)
       });
     }
   }
@@ -33,9 +33,9 @@ export class AppComponent implements OnInit{
     const basketId = localStorage.getItem('basket_id');
     if(basketId) {
       this.basketService.getBasket(basketId).subscribe(() => {
-        console.log('initialised basket'); // To be removed
+        console.log('initialised basket'); // TODO: remove
       }, error => {
-        console.log(error); // To be replace with toastr (notiffication)
+        console.log(error); // TODO: replace with toastr (notiffication)
       })
     }
   }

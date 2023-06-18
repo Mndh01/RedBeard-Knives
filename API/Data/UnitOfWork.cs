@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Interfaces;
 using API.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {

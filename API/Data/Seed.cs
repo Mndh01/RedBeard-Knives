@@ -57,8 +57,6 @@ namespace API.Data
                 {
                     await userManager.AddToRolesAsync(admin, new[] {"Admin", "Moderator"});
                 }
-
-                await _context.SaveChangesAsync();
             }
             
             if (!(await userManager.Users.CountAsync() > 1))
@@ -73,27 +71,18 @@ namespace API.Data
                     {
                         FullAddress = "london_" + i + " ,uk",
                         IsCurrent = true,
-                    };
-
-                    UserAddresses newUserAddress = new UserAddresses
-                    {
-                        Address = address,
                         User = user
                     };
                     
                     user.UserName = user.UserName.ToLower();
+                    user.Addresses.Add(address);
                     user.Email = "altair.2000nh"+ i +"@icloud.com";
-                    await userManager.CreateAsync(user, "Pa$$w0rd");
-                    await userManager.AddToRoleAsync(user, "Customer");
-                    _context.UserAddresses.Add(newUserAddress);
-                    user.UserAddresses.Add(newUserAddress);
-                    address.UserAddresses.Add(newUserAddress);
+                    var userResult = await userManager.CreateAsync(user, "Pa$$w0rd");
+                    var roleResult = await userManager.AddToRoleAsync(user, "Customer");
 
                     i++;
 
                 }
-                
-                await _context.SaveChangesAsync();
             }
 
             if(!await _context.DeliveryMethods.AnyAsync())

@@ -28,7 +28,7 @@ namespace API.Data.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("DisplayName")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FullAddress")
@@ -37,19 +37,21 @@ namespace API.Data.Migrations
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("State")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Street")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ZipCode")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Addresses");
                 });
@@ -136,6 +138,9 @@ namespace API.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("SureName")
                         .HasColumnType("TEXT");
 
@@ -175,28 +180,6 @@ namespace API.Data.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("API.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Comment");
-                });
-
             modelBuilder.Entity("API.Models.OrderAggregate.DeliveryMethod", b =>
                 {
                     b.Property<int>("Id")
@@ -232,8 +215,8 @@ namespace API.Data.Migrations
                     b.Property<int?>("DeliveryMethodId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset>("OrderDate")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("OrderDate")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("TEXT");
@@ -245,9 +228,14 @@ namespace API.Data.Migrations
                     b.Property<double>("Subtotal")
                         .HasColumnType("REAL");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DeliveryMethodId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -319,6 +307,9 @@ namespace API.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -346,19 +337,35 @@ namespace API.Data.Migrations
                     b.ToTable("ProductCategories");
                 });
 
-            modelBuilder.Entity("API.Models.UserAddresses", b =>
+            modelBuilder.Entity("API.Models.Review", b =>
                 {
-                    b.Property<int>("AddressId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("AddressId", "UserId");
+                    b.Property<string>("AuthorName")
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("UserId");
+                    b.Property<string>("Body")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("UserAddresses");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("API.Models.UserPhoto", b =>
@@ -465,6 +472,15 @@ namespace API.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("API.Models.Address", b =>
+                {
+                    b.HasOne("API.Models.AppUser", "User")
+                        .WithMany("Addresses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("API.Models.AppUser", b =>
                 {
                     b.HasOne("API.Models.UserPhoto", "Photo")
@@ -487,18 +503,17 @@ namespace API.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("API.Models.Comment", b =>
-                {
-                    b.HasOne("API.Models.Product", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("ProductId");
-                });
-
             modelBuilder.Entity("API.Models.OrderAggregate.Order", b =>
                 {
                     b.HasOne("API.Models.OrderAggregate.DeliveryMethod", "DeliveryMethod")
                         .WithMany()
                         .HasForeignKey("DeliveryMethodId");
+
+                    b.HasOne("API.Models.AppUser", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsOne("API.Models.OrderAggregate.Address", "ShipToAddress", b1 =>
                         {
@@ -511,10 +526,10 @@ namespace API.Data.Migrations
                             b1.Property<string>("Country")
                                 .HasColumnType("TEXT");
 
-                            b1.Property<string>("FirstName")
+                            b1.Property<string>("DisplayName")
                                 .HasColumnType("TEXT");
 
-                            b1.Property<string>("LastName")
+                            b1.Property<string>("FullAddress")
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("State")
@@ -583,17 +598,11 @@ namespace API.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("API.Models.UserAddresses", b =>
+            modelBuilder.Entity("API.Models.Review", b =>
                 {
-                    b.HasOne("API.Models.Address", "Address")
-                        .WithMany("UserAddresses")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.AppUser", "User")
-                        .WithMany("UserAddresses")
-                        .HasForeignKey("UserId")
+                    b.HasOne("API.Models.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
+import { ProductsService } from '../products.service';
+
+import { Product } from 'src/app/shop/models/Product';
+import { ToastrService } from 'ngx-toastr';
 import { BasketService } from 'src/app/basket/basket.service';
-import { Product } from 'src/app/models/Product';
-import { ProductsService } from 'src/app/services/products.service';
+import { Review } from '../../shared/models/Review';
 
 @Component({
   selector: 'app-product-details',
@@ -12,65 +14,63 @@ import { ProductsService } from 'src/app/services/products.service';
 })
 export class ProductDetailsComponent implements OnInit {
   product: Product;
+  newComment: string;
+  productId: number;
   quantity: number = 1;
-  galleryOptions: NgxGalleryOptions[];
-  galleryImages: NgxGalleryImage[];
+  review: Review;
 
-  constructor(private productService: ProductsService, private route: ActivatedRoute, private basketService: BasketService) { }
+  constructor( private route: ActivatedRoute, private productService: ProductsService,
+    private toastr: ToastrService, private basketService: BasketService) 
+    { }
 
   ngOnInit(): void {
-    this.loadProduct();
+    this.route.params.subscribe(params => {
+      this.productId = params['id'];
+      this.getProduct(this.productId);
+    });
+  }
 
-    this.galleryOptions = [
-      {
-        width: '500px',
-        height: '500px',
-        imagePercent:  100,
-        thumbnailsColumns: 4,
-        imageAnimation: NgxGalleryAnimation.Slide,
-        preview: false
+  getProduct(productId: number): void {
+    this.productService.getProductById(productId).subscribe({
+      next: (product: Product) => {
+        this.product = product;
+      },
+      error: (error: any) => {
+        this.toastr.error(error.message);
       }
-    ]
+    });
   }
 
-  getImages(): NgxGalleryImage[] {
-    const imageUrls = [];
-    for (const photo of this.product.photos) {
-      imageUrls.push({
-        small: photo?.url,
-        medium: photo?.url,
-        big: photo?.url
-      })
-    }
-    return imageUrls;
+  addReview(): void {
+    this.review = new Review(this.newComment, this.productId);
+
+    this.productService.addReviewToProduct(this.review).subscribe({
+      next: (review: Review) => {
+        this.product.reviews.push(review);
+        this.toastr.success('Comment added successfully');
+      }, 
+      error: (error: any) => {
+        this.toastr.error(error.message);
+      },
+      complete: () => {
+        this.newComment = '';
+      }
+    });
   }
 
-  addToBasket() {
-    if (this.quantity <= 0) {
-      this.quantity = 1;
-    }
-    this.basketService.addItemToBasket(this.product, this.quantity);
-  }
-
-  incrementQuantity() {
+  incrementItemQuantity(): void {
     this.quantity++;
   }
-  
-  decrementQuantity() {
-    this.quantity--;
+
+  decrementItemQuantity(): void {
+    if (this.quantity > 1) {
+      this.quantity--;
+    }
   }
 
-  loadProduct() { 
-    this.productService.getProductById(+this.route.snapshot.paramMap.get('id')).subscribe(product => {
-      this.product = product;
-      localStorage.setItem("product",JSON.stringify(product));      
-      this.galleryImages = this.getImages();
-    }, error => {console.log(error); })
+  addToBasket(): void {
+    this.basketService.addItemToBasket(this.product, this.quantity)
+    this.toastr.success(this.quantity + ' Item(s) added to basket');
+    this.quantity = 1;
   }
-
-  deleteProduct() {
-    return this.productService.deleteProduct(this.product.id).subscribe(response => {
-      console.log(response);
-    }, error => {console.log(error);} );
-  }
-} 
+}

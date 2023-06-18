@@ -9,7 +9,7 @@ ul {
 .icon-span {
     width: 30%;
     height: 50px;
-    background-color: $primary-color;
+    background-color: var(--primary-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,6 +41,6 @@ ul {
 }
 
 .btn-primary {
-    background-color: $primary-color !important;
+    background-color: var(--primary-color) !important;
     background-image: none;
 }

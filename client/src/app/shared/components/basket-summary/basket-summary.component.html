@@ -1,0 +1,66 @@
+<div class="table-responsive" *ngIf="(basketService.basket$ | async) as Basket">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Product</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Price</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Quantity</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);">
+                    <div class="p-2 px-3 text-uppercase">Total</div>
+                </th>
+                <th scope="col" class="text-center" style="background-color: var(--secondary-color);" *ngIf="isBasket">
+                    <div class="p-2 px-3 text-uppercase">Remove</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody >
+            <tr *ngFor="let item of Basket.items">
+                <th scope="row">
+                    <div class="p-2">
+                        <img src="{{item.photoUrl}}"
+                         alt="{{item.productName}}"
+                         class="img-fluid"
+                         style="max-height: 50px;">
+                         <div class="ml-3 d-inline-block align-middle">
+                            <h5 class="mb-0">
+
+                                <!-- The routing should be set appropiatly here -->
+                                <a routerLink="/product/{{item.id}}" style="text-decoration: none;">
+                                    {{item.productName | titlecase}}
+                                </a>
+                                <h5>
+                                    <span style="font-size: 15px;" class="text-muted
+                                     font-italic d-block">Type: {{item.category | titlecase}}</span>
+                                </h5>
+                            </h5>
+                         </div>
+                        
+                    </div>
+                </th>
+                <td class="align-middle text-center"><strong>${{item.price}}
+                </strong></td>
+                <td class="align-middle text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i (click)="decrementItemQuantity(item)" class="fa fa-minus-circle text-warning mr-2"
+                            style="cursor: pointer; font-size: 1.5em;" *ngIf="isBasket"></i>
+                        <span class="fw-bold" style="font-size: 1.5em;" [class.fs-6]="!isBasket">{{item.quantity}}</span>
+                        <i (click)="incrementItemQuantity(item)" [class]="" class="fa fa-plus-circle text-warning mx-2" 
+                            style="cursor: pointer; font-size: 1.5em;" *ngIf="isBasket"></i>
+                    </div>
+                </td>
+                <td class="align-middle text-center"><strong>${{item.price * item.quantity}}</strong></td>
+                <td class="align-middle text-center" *ngIf="isBasket">
+                    <a class="text-danger">
+                        <i (click)="removeBasketItem(item)" class="fa fa-trash" style="cursor: pointer; font-size: 1.5em;"></i>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,13 @@
+<div class="container-fluid container-xxl">
+  <div class="row flex-column" *ngIf="user !== null">
+      <ul class="list-group list-group-horizontal flex-wrap mb-3 justify-content-center">
+          <li class="list-group-item tab-group-item" routerLinkActive="active" routerLink="account" (click)="changeSelectedMenu(1)">Account&security</li>
+          <li class="list-group-item tab-group-item" routerLinkActive="active" routerLink="orders" (click)="changeSelectedMenu(2)">Orders</li>
+          <li class="list-group-item tab-group-item" routerLinkActive="active" routerLink="addresses" (click)="changeSelectedMenu(3)">Addresses</li>
+          <!-- <li class="list-group-item tab-group-item" routerLinkActive="active" routerLink="payments" (click)="changeSelectedMenu(4)">Payments</li> -->
+          <!-- <li class="list-group-item slide-text-on-hover" [class.active]="selectedMenu == 5" (click)="changeSelectedMenu(5)">Wish list</li> -->
+      </ul>
+      <router-outlet></router-outlet>
+    </div>
+  <div class="text-danger tw-bold fs-600 text-center" *ngIf="user === null">You should sign in in order to get to your profile page!</div>
+</div>

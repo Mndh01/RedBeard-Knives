@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Pagination } from 'src/app/models/Pagination';
+import { Pagination } from 'src/app/shared/models/Pagination';
 
 @Component({
   selector: 'app-paging-header',
